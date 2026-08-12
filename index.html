@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -7,7 +8,7 @@
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0">
 
-<title>XAU XAG 6 Point Strategy</title>
+<title>XAU XAG Strategy</title>
 
 <style>
 
@@ -17,86 +18,70 @@
 
 body{
     margin:0;
-    padding:10px;
+    padding:9px;
     background:#f3f4f6;
     color:#111;
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 
 h1{
     text-align:center;
-    font-size:24px;
-    margin:8px 0 3px;
+    font-size:23px;
     font-weight:900;
+    margin:7px 0 2px;
 }
 
 .subtitle{
     text-align:center;
     color:#666;
-    font-size:13px;
-    margin-bottom:14px;
+    font-size:12px;
+    margin-bottom:12px;
 }
-
-/* =========================
-   XAU / XAG COLUMNS
-========================= */
 
 .columns{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:9px;
+    gap:8px;
 }
 
 .card{
     background:#fff;
-    border-radius:16px;
-    padding:8px;
-    box-shadow:0 2px 10px rgba(0,0,0,.10);
+    border-radius:15px;
+    padding:7px;
+    box-shadow:0 2px 9px rgba(0,0,0,.10);
 }
 
 .header{
     text-align:center;
-    font-size:21px;
+    font-size:20px;
     font-weight:900;
     background:#e9e9e9;
-    border-radius:11px;
-    padding:9px;
-    margin-bottom:8px;
+    border-radius:10px;
+    padding:8px;
+    margin-bottom:7px;
 }
 
-/* =========================
-   POINT
-========================= */
-
 .point{
-    border:1px solid #ddd;
-    border-radius:11px;
-    padding:7px;
-    margin-bottom:8px;
     background:#fff;
+    border:1px solid #ddd;
+    border-radius:10px;
+    padding:7px;
+    margin-bottom:7px;
 }
 
 .point-number{
-    font-size:10px;
+    font-size:9px;
     font-weight:900;
-    margin-bottom:3px;
+    margin-bottom:2px;
 }
 
 .point-name{
-    font-size:9px;
+    font-size:8.5px;
     font-weight:700;
     line-height:1.3;
-    min-height:34px;
-    margin-bottom:6px;
+    min-height:32px;
+    margin-bottom:5px;
 }
-
-/* =========================
-   BUTTONS
-========================= */
 
 .buttons{
     display:grid;
@@ -108,166 +93,167 @@ button{
     border:1px solid #ccc;
     background:#fafafa;
     color:#222;
-    border-radius:8px;
+    border-radius:7px;
     padding:8px 2px;
-    font-size:11px;
+    font-size:10px;
     font-weight:900;
     cursor:pointer;
     -webkit-tap-highlight-color:transparent;
 }
 
-/* SELECTED +1 */
+/*
+================================================
+SELECTED BUTTONS
+================================================
+*/
 
 button.selected.plus{
-    background:#c9f2d3;
-    border:2px solid #16803c;
-    color:#08752f;
+    background:#baf0c8 !important;
+    color:#075f27 !important;
+    border:2px solid #08752f !important;
+    box-shadow:0 0 0 2px rgba(8,117,47,.15);
 }
-
-/* SELECTED -1 */
 
 button.selected.minus{
-    background:#ffd6d6;
-    border:2px solid #c62828;
-    color:#b51e1e;
+    background:#ffc5c5 !important;
+    color:#9d1111 !important;
+    border:2px solid #c62828 !important;
+    box-shadow:0 0 0 2px rgba(198,40,40,.15);
 }
-
-/* SELECTED 0 */
 
 button.selected.zero{
-    background:#d8d8d8;
-    border:2px solid #666;
-    color:#333;
+    background:#cfcfcf !important;
+    color:#333 !important;
+    border:2px solid #666 !important;
+    box-shadow:0 0 0 2px rgba(80,80,80,.15);
 }
 
-/* =========================
-   TOTAL SCORE
-========================= */
+/*
+================================================
+SCORE
+================================================
+*/
 
 .total{
-    margin-top:8px;
+    margin-top:7px;
     background:#f0f0f0;
-    border-radius:11px;
-    padding:9px 4px;
+    border-radius:10px;
+    padding:9px 3px;
     text-align:center;
 }
 
 .score{
-    font-size:23px;
+    font-size:22px;
     font-weight:900;
-    line-height:1.2;
 }
 
 .positive{
-    color:#16803c;
+    color:#08752f;
 }
 
 .negative{
     color:#c62828;
 }
 
-.neutral{
+.status{
+    margin-top:4px;
+    font-size:9px;
+    font-weight:900;
     color:#666;
 }
-
-.status{
-    margin-top:5px;
-    font-size:10px;
-    font-weight:900;
-    color:#555;
-    line-height:1.3;
-}
-
-/* =========================
-   ELIGIBILITY
-========================= */
 
 .eligibility{
-    margin-top:7px;
-    padding:7px 4px;
-    border-radius:8px;
-    font-size:10px;
-    font-weight:900;
-    text-align:center;
-    background:#eee;
+    margin-top:6px;
+    padding:6px 2px;
+    border-radius:7px;
+    background:#e8e8e8;
     color:#666;
+    font-size:9px;
+    font-weight:900;
 }
 
 .eligibility.bull{
-    background:#d9f5df;
-    color:#146c32;
+    background:#c9f2d3;
+    color:#08752f;
 }
 
 .eligibility.bear{
-    background:#ffe0e0;
-    color:#a51d1d;
+    background:#ffd1d1;
+    color:#a51b1b;
 }
 
-/* =========================
-   FINAL RESULT
-========================= */
+/*
+================================================
+FINAL DECISION
+================================================
+*/
 
 .result{
-    margin-top:11px;
-    padding:13px;
-    border-radius:12px;
+    margin-top:10px;
+    padding:12px;
+    border-radius:11px;
     text-align:center;
-    font-size:13px;
+    font-size:12px;
     font-weight:900;
-    background:#fff0cc;
     line-height:1.5;
-}
-
-.result.good{
-    background:#ddf3e4;
-    color:#145c2c;
-}
-
-.result.bad{
-    background:#ffe0e0;
-    color:#9d1717;
-}
-
-.result.neutral{
     background:#eeeeee;
     color:#555;
 }
 
-/* =========================
-   RESET
-========================= */
+.result.good{
+    background:#d9f5df;
+    color:#145c2c;
+}
+
+.result.bad{
+    background:#ffdede;
+    color:#9d1717;
+}
+
+.result.wait{
+    background:#fff0cc;
+    color:#765600;
+}
+
+/*
+================================================
+RESET
+================================================
+*/
 
 .reset{
     display:block;
-    margin:11px auto;
-    padding:9px 24px;
+    margin:10px auto;
+    padding:8px 22px;
     border:1px solid #bbb;
-    background:#fff;
-    border-radius:9px;
+    background:white;
+    border-radius:8px;
     font-weight:800;
 }
 
-/* =========================
-   NOTES
-========================= */
+/*
+================================================
+NOTES
+================================================
+*/
 
 .notes{
-    margin-top:12px;
+    margin-top:11px;
     background:#fff;
-    padding:13px;
-    border-radius:15px;
+    padding:12px;
+    border-radius:14px;
     box-shadow:0 2px 8px rgba(0,0,0,.07);
 }
 
 .notes h2{
-    margin:0 0 8px;
-    font-size:17px;
+    margin:0 0 7px;
+    font-size:16px;
 }
 
 .note{
-    font-size:11px;
+    font-size:10px;
     line-height:1.45;
-    padding:7px 0;
+    padding:6px 0;
     border-bottom:1px solid #eee;
 }
 
@@ -275,48 +261,50 @@ button.selected.zero{
     border-bottom:none;
 }
 
-/* =========================
-   MOBILE
-========================= */
+/*
+================================================
+MOBILE
+================================================
+*/
 
 @media(max-width:500px){
 
     body{
-        padding:7px;
+        padding:6px;
     }
 
     h1{
-        font-size:22px;
+        font-size:21px;
     }
 
     .columns{
-        gap:6px;
+        gap:5px;
     }
 
     .card{
-        padding:6px;
+        padding:5px;
     }
 
     .header{
-        font-size:19px;
-        padding:8px;
+        font-size:18px;
+        padding:7px;
     }
 
     .point{
-        padding:6px;
+        padding:5px;
     }
 
     .point-name{
-        font-size:8.5px;
+        font-size:8px;
     }
 
     button{
-        font-size:10px;
+        font-size:9px;
         padding:8px 1px;
     }
 
     .score{
-        font-size:21px;
+        font-size:20px;
     }
 
 }
@@ -331,35 +319,27 @@ button.selected.zero{
 <h1>6-Point Strategy Score</h1>
 
 <div class="subtitle">
-XAU and XAG calculated independently • ±4 = Eligibility
+XAU & XAG • +4 / −4 = Eligibility
 </div>
 
-
-<!-- =====================================================
-     XAU + XAG
-===================================================== -->
 
 <div class="columns">
 
 
-<!-- =====================================================
+<!-- =================================================
      XAU
-===================================================== -->
+================================================= -->
 
 <div class="card">
 
-<div class="header">
-XAU
-</div>
+<div class="header">XAU</div>
 
 
 <!-- POINT 1 -->
 
 <div class="point">
 
-<div class="point-number">
-POINT 1
-</div>
+<div class="point-number">POINT 1</div>
 
 <div class="point-name">
 W-POC formed upwards / downwards
@@ -367,15 +347,18 @@ W-POC formed upwards / downwards
 
 <div class="buttons">
 
-<button onclick="choose(this,'xau',0,1)">
+<button
+onclick="choose(this,'xau',0,1)">
 +1
 </button>
 
-<button onclick="choose(this,'xau',0,-1)">
+<button
+onclick="choose(this,'xau',0,-1)">
 −1
 </button>
 
-<button onclick="choose(this,'xau',0,0)">
+<button
+onclick="choose(this,'xau',0,0)">
 0
 </button>
 
@@ -388,25 +371,26 @@ W-POC formed upwards / downwards
 
 <div class="point">
 
-<div class="point-number">
-POINT 2
-</div>
+<div class="point-number">POINT 2</div>
 
 <div class="point-name">
-Price above / below Weekly VAH–VAL
+Weekly VAH / VAL direction
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xau',1,1)">
+<button
+onclick="choose(this,'xau',1,1)">
 +1
 </button>
 
-<button onclick="choose(this,'xau',1,-1)">
+<button
+onclick="choose(this,'xau',1,-1)">
 −1
 </button>
 
-<button onclick="choose(this,'xau',1,0)">
+<button
+onclick="choose(this,'xau',1,0)">
 0
 </button>
 
@@ -419,9 +403,7 @@ Price above / below Weekly VAH–VAL
 
 <div class="point">
 
-<div class="point-number">
-POINT 3
-</div>
+<div class="point-number">POINT 3</div>
 
 <div class="point-name">
 D-POC formed up / down
@@ -429,15 +411,18 @@ D-POC formed up / down
 
 <div class="buttons">
 
-<button onclick="choose(this,'xau',2,1)">
+<button
+onclick="choose(this,'xau',2,1)">
 +1
 </button>
 
-<button onclick="choose(this,'xau',2,-1)">
+<button
+onclick="choose(this,'xau',2,-1)">
 −1
 </button>
 
-<button onclick="choose(this,'xau',2,0)">
+<button
+onclick="choose(this,'xau',2,0)">
 0
 </button>
 
@@ -450,9 +435,7 @@ D-POC formed up / down
 
 <div class="point">
 
-<div class="point-number">
-POINT 4
-</div>
+<div class="point-number">POINT 4</div>
 
 <div class="point-name">
 15m CVD breaks last swing
@@ -460,15 +443,18 @@ POINT 4
 
 <div class="buttons">
 
-<button onclick="choose(this,'xau',3,1)">
+<button
+onclick="choose(this,'xau',3,1)">
 +1
 </button>
 
-<button onclick="choose(this,'xau',3,-1)">
+<button
+onclick="choose(this,'xau',3,-1)">
 −1
 </button>
 
-<button onclick="choose(this,'xau',3,0)">
+<button
+onclick="choose(this,'xau',3,0)">
 0
 </button>
 
@@ -481,9 +467,7 @@ POINT 4
 
 <div class="point">
 
-<div class="point-number">
-POINT 5
-</div>
+<div class="point-number">POINT 5</div>
 
 <div class="point-name">
 Weekly + Daily VWAP direction
@@ -491,15 +475,18 @@ Weekly + Daily VWAP direction
 
 <div class="buttons">
 
-<button onclick="choose(this,'xau',4,1)">
+<button
+onclick="choose(this,'xau',4,1)">
 +1
 </button>
 
-<button onclick="choose(this,'xau',4,-1)">
+<button
+onclick="choose(this,'xau',4,-1)">
 −1
 </button>
 
-<button onclick="choose(this,'xau',4,0)">
+<button
+onclick="choose(this,'xau',4,0)">
 0
 </button>
 
@@ -512,25 +499,26 @@ Weekly + Daily VWAP direction
 
 <div class="point">
 
-<div class="point-number">
-POINT 6
-</div>
+<div class="point-number">POINT 6</div>
 
 <div class="point-name">
-Price above / below Daily VAH–VAL
+Daily VAH / VAL direction
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xau',5,1)">
+<button
+onclick="choose(this,'xau',5,1)">
 +1
 </button>
 
-<button onclick="choose(this,'xau',5,-1)">
+<button
+onclick="choose(this,'xau',5,-1)">
 −1
 </button>
 
-<button onclick="choose(this,'xau',5,0)">
+<button
+onclick="choose(this,'xau',5,0)">
 0
 </button>
 
@@ -553,7 +541,8 @@ Price above / below Daily VAH–VAL
 0 / 6 SELECTED
 </div>
 
-<div id="xauEligibility" class="eligibility">
+<div id="xauEligibility"
+     class="eligibility">
 NOT ELIGIBLE
 </div>
 
@@ -563,24 +552,20 @@ NOT ELIGIBLE
 
 
 
-<!-- =====================================================
+<!-- =================================================
      XAG
-===================================================== -->
+================================================= -->
 
 <div class="card">
 
-<div class="header">
-XAG
-</div>
+<div class="header">XAG</div>
 
 
 <!-- POINT 1 -->
 
 <div class="point">
 
-<div class="point-number">
-POINT 1
-</div>
+<div class="point-number">POINT 1</div>
 
 <div class="point-name">
 W-POC formed upwards / downwards
@@ -588,15 +573,18 @@ W-POC formed upwards / downwards
 
 <div class="buttons">
 
-<button onclick="choose(this,'xag',0,1)">
+<button
+onclick="choose(this,'xag',0,1)">
 +1
 </button>
 
-<button onclick="choose(this,'xag',0,-1)">
+<button
+onclick="choose(this,'xag',0,-1)">
 −1
 </button>
 
-<button onclick="choose(this,'xag',0,0)">
+<button
+onclick="choose(this,'xag',0,0)">
 0
 </button>
 
@@ -609,25 +597,26 @@ W-POC formed upwards / downwards
 
 <div class="point">
 
-<div class="point-number">
-POINT 2
-</div>
+<div class="point-number">POINT 2</div>
 
 <div class="point-name">
-Price above / below Weekly VAH–VAL
+Weekly VAH / VAL direction
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xag',1,1)">
+<button
+onclick="choose(this,'xag',1,1)">
 +1
 </button>
 
-<button onclick="choose(this,'xag',1,-1)">
+<button
+onclick="choose(this,'xag',1,-1)">
 −1
 </button>
 
-<button onclick="choose(this,'xag',1,0)">
+<button
+onclick="choose(this,'xag',1,0)">
 0
 </button>
 
@@ -640,9 +629,7 @@ Price above / below Weekly VAH–VAL
 
 <div class="point">
 
-<div class="point-number">
-POINT 3
-</div>
+<div class="point-number">POINT 3</div>
 
 <div class="point-name">
 D-POC formed up / down
@@ -650,15 +637,18 @@ D-POC formed up / down
 
 <div class="buttons">
 
-<button onclick="choose(this,'xag',2,1)">
+<button
+onclick="choose(this,'xag',2,1)">
 +1
 </button>
 
-<button onclick="choose(this,'xag',2,-1)">
+<button
+onclick="choose(this,'xag',2,-1)">
 −1
 </button>
 
-<button onclick="choose(this,'xag',2,0)">
+<button
+onclick="choose(this,'xag',2,0)">
 0
 </button>
 
@@ -671,9 +661,7 @@ D-POC formed up / down
 
 <div class="point">
 
-<div class="point-number">
-POINT 4
-</div>
+<div class="point-number">POINT 4</div>
 
 <div class="point-name">
 15m CVD breaks last swing
@@ -681,15 +669,18 @@ POINT 4
 
 <div class="buttons">
 
-<button onclick="choose(this,'xag',3,1)">
+<button
+onclick="choose(this,'xag',3,1)">
 +1
 </button>
 
-<button onclick="choose(this,'xag',3,-1)">
+<button
+onclick="choose(this,'xag',3,-1)">
 −1
 </button>
 
-<button onclick="choose(this,'xag',3,0)">
+<button
+onclick="choose(this,'xag',3,0)">
 0
 </button>
 
@@ -702,9 +693,7 @@ POINT 4
 
 <div class="point">
 
-<div class="point-number">
-POINT 5
-</div>
+<div class="point-number">POINT 5</div>
 
 <div class="point-name">
 Weekly + Daily VWAP direction
@@ -712,15 +701,18 @@ Weekly + Daily VWAP direction
 
 <div class="buttons">
 
-<button onclick="choose(this,'xag',4,1)">
+<button
+onclick="choose(this,'xag',4,1)">
 +1
 </button>
 
-<button onclick="choose(this,'xag',4,-1)">
+<button
+onclick="choose(this,'xag',4,-1)">
 −1
 </button>
 
-<button onclick="choose(this,'xag',4,0)">
+<button
+onclick="choose(this,'xag',4,0)">
 0
 </button>
 
@@ -733,25 +725,26 @@ Weekly + Daily VWAP direction
 
 <div class="point">
 
-<div class="point-number">
-POINT 6
-</div>
+<div class="point-number">POINT 6</div>
 
 <div class="point-name">
-Price above / below Daily VAH–VAL
+Daily VAH / VAL direction
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xag',5,1)">
+<button
+onclick="choose(this,'xag',5,1)">
 +1
 </button>
 
-<button onclick="choose(this,'xag',5,-1)">
+<button
+onclick="choose(this,'xag',5,-1)">
 −1
 </button>
 
-<button onclick="choose(this,'xag',5,0)">
+<button
+onclick="choose(this,'xag',5,0)">
 0
 </button>
 
@@ -774,7 +767,8 @@ Price above / below Daily VAH–VAL
 0 / 6 SELECTED
 </div>
 
-<div id="xagEligibility" class="eligibility">
+<div id="xagEligibility"
+     class="eligibility">
 NOT ELIGIBLE
 </div>
 
@@ -786,157 +780,105 @@ NOT ELIGIBLE
 
 
 
-<!-- =====================================================
-     FINAL DECISION
-===================================================== -->
+<!-- =================================================
+     DECISION
+================================================= -->
 
-<div id="result" class="result neutral">
+<div id="result"
+     class="result wait">
 
-Select points to calculate eligibility.
+Select your points.
 
 </div>
 
 
-<button class="reset" onclick="resetAll()">
+<button
+class="reset"
+onclick="resetAll()">
+
 RESET
+
 </button>
 
 
 
-<!-- =====================================================
-     STRATEGY NOTES
-===================================================== -->
+<!-- =================================================
+     NOTES
+================================================= -->
 
 <div class="notes">
 
 <h2>Strategy Rules</h2>
 
-
 <div class="note">
-
-<b>±4 Eligibility:</b>
-A metal becomes eligible once it reaches +4 or −4.
-
+<b>Eligibility:</b>
++4 or higher = bullish eligible.
+−4 or lower = bearish eligible.
 </div>
 
+<div class="note">
+<b>Opposite:</b>
+XAU and XAG are only considered opposite when BOTH have reached ±4 and their directions disagree.
+</div>
 
 <div class="note">
+<b>Both Bullish:</b>
+If XAU is +4 or higher AND XAG is +4 or higher → TAKE ENTRY FROM NEAREST ENTRY POINT.
+</div>
 
+<div class="note">
+<b>Both Bearish:</b>
+If XAU is −4 or lower AND XAG is −4 or lower → TAKE ENTRY FROM NEAREST ENTRY POINT.
+</div>
+
+<div class="note">
+<b>XAG Dominant:</b>
+When conditions are otherwise equal, XAG is dominant.
+</div>
+
+<div class="note">
 <b>Normal Trade:</b>
-+4 or −4.
-
+±4.
 </div>
 
-
 <div class="note">
-
 <b>Good Trade:</b>
-+5 / +6 or −5 / −6.
-
+±5 / ±6.
 </div>
 
-
 <div class="note">
-
-<b>XAU / XAG Opposite:</b>
-Only judge them opposite when BOTH metals have reached the ±4 eligibility threshold.
-
+<b>Score:</b>
+Positive and negative points are counted separately. They are never combined.
 </div>
 
-
 <div class="note">
-
-<b>Example:</b>
-XAU +3 and XAG −5 are NOT considered opposite because XAU is not yet eligible.
-
-</div>
-
-
-<div class="note">
-
-<b>Same Direction:</b>
-If both eligible metals have the same direction, prefer the stronger score and cleaner location.
-
-</div>
-
-
-<div class="note">
-
-<b>XAG Dominance:</b>
-When the situation is otherwise equal, XAG is dominant.
-
-</div>
-
-
-<div class="note">
-
 <b>Entry Priority:</b>
-Daily VWAP = best option. VAL / VAH (Daily / Weekly) = second best.
-
+Daily VWAP is the best location. Daily / Weekly VAH or VAL is second best.
 </div>
 
-
 <div class="note">
-
-<b>VAL / VAH:</b>
-VAL or VAH alone is NOT an entry. It must have at least one additional confluence such as Band 1 or POC.
-
+<b>VAH / VAL:</b>
+VAH or VAL alone is not an entry. One additional confluence is required.
 </div>
 
-
 <div class="note">
-
 <b>Sweep:</b>
-Liquidity sweep is an additional sniper-entry confirmation. It is not required.
-
+Liquidity sweep is additional confirmation / sniper entry, not mandatory.
 </div>
 
-
 <div class="note">
-
 <b>Monday:</b>
 Use previous week's POC / VAH / VAL.
-
 </div>
 
-
 <div class="note">
-
-<b>Pending Trade:</b>
-Use a pending order at the best-defined entry location.
-
-</div>
-
-
-<div class="note">
-
-<b>Stop Loss:</b>
-Try to place SL below / above a major structure.
-
-</div>
-
-
-<div class="note">
-
 <b>Target:</b>
-Best TP = PDH or PDL.
-
+PDH / PDL.
 </div>
 
-
 <div class="note">
-
-<b>Preferred RR:</b>
+<b>RR:</b>
 1:3.
-
-</div>
-
-
-<div class="note">
-
-<b>Trial:</b>
-Record XAU and XAG from the same entry to compare which performs better.
-
 </div>
 
 </div>
@@ -945,97 +887,53 @@ Record XAU and XAG from the same entry to compare which performs better.
 
 <script>
 
-
 /* =====================================================
-   DATA
-
-   null = not selected
-    1   = +1
-   -1   = -1
-    0   = neutral
-
+   STORAGE
 ===================================================== */
 
-let xau = [
-    null,
-    null,
-    null,
-    null,
-    null,
-    null
-];
+let xau = [null,null,null,null,null,null];
 
-let xag = [
-    null,
-    null,
-    null,
-    null,
-    null,
-    null
-];
-
+let xag = [null,null,null,null,null,null];
 
 
 /* =====================================================
-   SELECT A POINT
-
-   This function is deliberately simple.
-
-   Every individual point remembers its own
-   selection.
-
-   Therefore all six selected buttons can remain
-   highlighted at the same time.
+   APPLY VISUAL HIGHLIGHT
 ===================================================== */
 
-function choose(button, metal, pointIndex, value){
+function highlightButton(button,value){
 
-    let array;
+    /*
+    Remove every previous state
+    */
 
-    if(metal === "xau"){
-        array = xau;
-    }else{
-        array = xag;
-    }
-
-
-    /* Save the value */
-
-    array[pointIndex] = value;
+    button.classList.remove(
+        "selected",
+        "plus",
+        "minus",
+        "zero"
+    );
 
 
-    /* Find this point */
-
-    let point =
-        button.closest(".point");
-
-
-    /* Remove old highlight from this point only */
-
-    let buttons =
-        point.querySelectorAll("button");
-
-
-    buttons.forEach(function(b){
-
-        b.classList.remove(
-            "selected",
-            "plus",
-            "minus",
-            "zero"
-        );
-
-    });
-
-
-    /* Highlight selected button */
+    /*
+    Add selected state
+    */
 
     button.classList.add("selected");
 
 
+    /*
+    Use INLINE styles too.
+    This makes the selected state impossible
+    to disappear because of CSS conflicts.
+    */
+
     if(value === 1){
 
         button.classList.add("plus");
+
+        button.style.backgroundColor = "#baf0c8";
+        button.style.color = "#075f27";
+        button.style.border = "2px solid #08752f";
 
     }
 
@@ -1043,47 +941,119 @@ function choose(button, metal, pointIndex, value){
 
         button.classList.add("minus");
 
+        button.style.backgroundColor = "#ffc5c5";
+        button.style.color = "#9d1111";
+        button.style.border = "2px solid #c62828";
+
     }
 
     else{
 
         button.classList.add("zero");
 
+        button.style.backgroundColor = "#cfcfcf";
+        button.style.color = "#333";
+        button.style.border = "2px solid #666";
+
     }
 
+}
 
-    /* Recalculate */
+
+/* =====================================================
+   REMOVE HIGHLIGHT
+===================================================== */
+
+function clearButton(button){
+
+    button.classList.remove(
+        "selected",
+        "plus",
+        "minus",
+        "zero"
+    );
+
+    button.style.backgroundColor = "";
+    button.style.color = "";
+    button.style.border = "";
+
+}
+
+
+/* =====================================================
+   SELECT POINT
+===================================================== */
+
+function choose(
+    button,
+    metal,
+    pointIndex,
+    value
+){
+
+    let array =
+        metal === "xau"
+        ? xau
+        : xag;
+
+
+    /*
+    Save the selected value
+    */
+
+    array[pointIndex] = value;
+
+
+    /*
+    Find this point only
+    */
+
+    let point =
+        button.closest(".point");
+
+
+    /*
+    Clear the other two choices
+    */
+
+    point
+        .querySelectorAll("button")
+        .forEach(function(b){
+
+            clearButton(b);
+
+        });
+
+
+    /*
+    Keep selected choice highlighted
+    */
+
+    highlightButton(
+        button,
+        value
+    );
+
+
+    /*
+    Update score
+    */
 
     update();
 
 }
 
 
-
 /* =====================================================
-   CALCULATE
-
-   IMPORTANT:
-
-   Positive and negative points are counted
-   separately.
-
-   Example:
-
-   +1 +1 +1 -1 -1 0
-
-   becomes:
-
-   positive = 3
-   negative = 2
-
-   NOT +1.
+   CALCULATE POSITIVE / NEGATIVE
 ===================================================== */
 
 function calculate(array){
 
     let positive = 0;
+
     let negative = 0;
+
     let selected = 0;
 
 
@@ -1095,11 +1065,13 @@ function calculate(array){
 
         }
 
+
         if(value === 1){
 
             positive++;
 
         }
+
 
         if(value === -1){
 
@@ -1111,33 +1083,23 @@ function calculate(array){
 
 
     return {
-
-        positive: positive,
-        negative: negative,
-        selected: selected
-
+        positive:positive,
+        negative:negative,
+        selected:selected
     };
 
 }
 
 
-
 /* =====================================================
-   DIRECTION
+   ELIGIBILITY
 
-   +4 or higher = bullish / positive
-
-   -4 or lower = bearish / negative
-
-   Anything between = NOT ELIGIBLE
+   +4 = bullish
+   -4 = bearish
 
 ===================================================== */
 
 function direction(data){
-
-    /*
-       Positive eligibility
-    */
 
     if(data.positive >= 4){
 
@@ -1146,10 +1108,6 @@ function direction(data){
     }
 
 
-    /*
-       Negative eligibility
-    */
-
     if(data.negative >= 4){
 
         return -1;
@@ -1157,33 +1115,29 @@ function direction(data){
     }
 
 
-    /*
-       Not eligible
-    */
-
     return 0;
 
 }
 
 
-
 /* =====================================================
-   DISPLAY INDIVIDUAL METAL
+   DISPLAY METAL
 ===================================================== */
 
-function displayMetal(metal, data){
+function displayMetal(
+    metal,
+    data
+){
 
     let score =
         document.getElementById(
             metal + "Score"
         );
 
-
     let status =
         document.getElementById(
             metal + "Status"
         );
-
 
     let eligibility =
         document.getElementById(
@@ -1191,9 +1145,13 @@ function displayMetal(metal, data){
         );
 
 
-    /* =========================
-       SCORE
-    ========================= */
+    /*
+    IMPORTANT:
+
+    +3 and -2 remain separate.
+
+    They are NEVER subtracted.
+    */
 
     score.innerHTML =
         '<span class="positive">+' +
@@ -1205,18 +1163,14 @@ function displayMetal(metal, data){
         '</span>';
 
 
-    /* =========================
-       SELECTED COUNT
-    ========================= */
-
     status.innerHTML =
         data.selected +
         " / 6 SELECTED";
 
 
-    /* =========================
-       ELIGIBILITY
-    ========================= */
+    /*
+    Eligibility
+    */
 
     let dir =
         direction(data);
@@ -1229,7 +1183,7 @@ function displayMetal(metal, data){
     if(dir === 1){
 
         eligibility.innerHTML =
-            "✓ ELIGIBLE — BULLISH";
+            "✓ BULLISH — ELIGIBLE";
 
         eligibility.classList.add(
             "bull"
@@ -1240,7 +1194,7 @@ function displayMetal(metal, data){
     else if(dir === -1){
 
         eligibility.innerHTML =
-            "✓ ELIGIBLE — BEARISH";
+            "✓ BEARISH — ELIGIBLE";
 
         eligibility.classList.add(
             "bear"
@@ -1258,7 +1212,6 @@ function displayMetal(metal, data){
 }
 
 
-
 /* =====================================================
    FINAL DECISION
 ===================================================== */
@@ -1273,18 +1226,13 @@ function update(){
 
 
     /*
-       Update XAU
+    Update displays
     */
 
     displayMetal(
         "xau",
         A
     );
-
-
-    /*
-       Update XAG
-    */
 
     displayMetal(
         "xag",
@@ -1293,7 +1241,7 @@ function update(){
 
 
     /*
-       Final result box
+    Result box
     */
 
     let result =
@@ -1310,20 +1258,7 @@ function update(){
 
 
     /* =================================================
-       CASE 1
-
-       BOTH are eligible AND opposite.
-
-       This is the important correction.
-
-       Example:
-
-       XAU +4
-       XAG -5
-
-       = OPPOSITE
-       = NO TRADE
-
+       BOTH ELIGIBLE + OPPOSITE
     ================================================= */
 
     if(
@@ -1333,7 +1268,9 @@ function update(){
     ){
 
         result.innerHTML =
-            "⛔ XAU + XAG OPPOSITE → NO TRADE";
+            "⛔ XAU + XAG OPPOSITE" +
+            "<br>" +
+            "NO TRADE";
 
         result.className =
             "result bad";
@@ -1344,21 +1281,23 @@ function update(){
 
 
     /* =================================================
-       CASE 2
+       BOTH BULLISH
 
-       Neither is eligible yet.
+       +4 or more on BOTH
     ================================================= */
 
     if(
-        xauDirection === 0 &&
-        xagDirection === 0
+        xauDirection === 1 &&
+        xagDirection === 1
     ){
 
         result.innerHTML =
-            "⏳ NO ELIGIBLE METAL YET — NEED +4 OR −4";
+            "✅ XAU + XAG BULLISH" +
+            "<br>" +
+            "TAKE ENTRY FROM NEAREST ENTRY POINT";
 
         result.className =
-            "result neutral";
+            "result good";
 
         return;
 
@@ -1366,9 +1305,31 @@ function update(){
 
 
     /* =================================================
-       CASE 3
+       BOTH BEARISH
 
-       Only XAU is eligible.
+       -4 or lower on BOTH
+    ================================================= */
+
+    if(
+        xauDirection === -1 &&
+        xagDirection === -1
+    ){
+
+        result.innerHTML =
+            "✅ XAU + XAG BEARISH" +
+            "<br>" +
+            "TAKE ENTRY FROM NEAREST ENTRY POINT";
+
+        result.className =
+            "result good";
+
+        return;
+
+    }
+
+
+    /* =================================================
+       ONLY XAU ELIGIBLE
     ================================================= */
 
     if(
@@ -1376,20 +1337,13 @@ function update(){
         xagDirection === 0
     ){
 
-        let sign =
-            xauDirection === 1
-            ? "BULLISH"
-            : "BEARISH";
-
-
         result.innerHTML =
-            "XAU ✓ ELIGIBLE — " +
-            sign +
+            "XAU ✓ ELIGIBLE" +
             "<br>" +
-            "XAG not yet eligible.";
+            "XAG NOT YET ELIGIBLE — NEED ±4";
 
         result.className =
-            "result good";
+            "result wait";
 
         return;
 
@@ -1397,9 +1351,7 @@ function update(){
 
 
     /* =================================================
-       CASE 4
-
-       Only XAG is eligible.
+       ONLY XAG ELIGIBLE
     ================================================= */
 
     if(
@@ -1407,20 +1359,13 @@ function update(){
         xagDirection !== 0
     ){
 
-        let sign =
-            xagDirection === 1
-            ? "BULLISH"
-            : "BEARISH";
-
-
         result.innerHTML =
-            "XAG ✓ ELIGIBLE — " +
-            sign +
+            "XAG ✓ ELIGIBLE" +
             "<br>" +
-            "XAU not yet eligible.";
+            "XAU NOT YET ELIGIBLE — NEED ±4";
 
         result.className =
-            "result good";
+            "result wait";
 
         return;
 
@@ -1428,69 +1373,22 @@ function update(){
 
 
     /* =================================================
-       CASE 5
-
-       BOTH eligible and SAME direction.
-
-       Choose stronger score.
-
-       XAG wins ties because XAG is dominant.
+       NEITHER ELIGIBLE
     ================================================= */
 
-    let xauStrength =
-        Math.max(
-            A.positive,
-            A.negative
-        );
-
-
-    let xagStrength =
-        Math.max(
-            B.positive,
-            B.negative
-        );
-
-
-    let preferred;
-
-
-    if(xagStrength >= xauStrength){
-
-        preferred = "XAG";
-
-    }
-
-    else{
-
-        preferred = "XAU";
-
-    }
-
-
-    let directionText =
-        xauDirection === 1
-        ? "BULLISH"
-        : "BEARISH";
-
-
     result.innerHTML =
-        "✅ BOTH ELIGIBLE — " +
-        directionText +
+        "⏳ NO ELIGIBLE METAL YET" +
         "<br>" +
-        "Preferred: " +
-        preferred +
-        " — use the cleaner location";
-
+        "NEED +4 OR −4";
 
     result.className =
-        "result good";
+        "result wait";
 
 }
 
 
-
 /* =====================================================
-   RESET EVERYTHING
+   RESET
 ===================================================== */
 
 function resetAll(){
@@ -1516,25 +1414,22 @@ function resetAll(){
 
 
     /*
-       Remove every highlight
+    Clear every visual selection
     */
 
     document
-        .querySelectorAll("button")
+        .querySelectorAll(
+            ".point button"
+        )
         .forEach(function(button){
 
-            button.classList.remove(
-                "selected",
-                "plus",
-                "minus",
-                "zero"
-            );
+            clearButton(button);
 
         });
 
 
     /*
-       Recalculate everything
+    Update
     */
 
     update();
@@ -1542,9 +1437,8 @@ function resetAll(){
 }
 
 
-
 /* =====================================================
-   INITIAL STATE
+   START
 ===================================================== */
 
 update();
@@ -1552,4 +1446,5 @@ update();
 </script>
 
 </body>
+
 </html>
