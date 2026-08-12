@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
 <title>XAU XAG 6 Point Strategy</title>
 
@@ -14,16 +17,21 @@
 
 body{
     margin:0;
-    padding:12px;
+    padding:10px;
     background:#f3f4f6;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     color:#111;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 }
 
 h1{
     text-align:center;
     font-size:24px;
-    margin:8px 0 2px;
+    margin:8px 0 3px;
+    font-weight:900;
 }
 
 .subtitle{
@@ -33,16 +41,20 @@ h1{
     margin-bottom:14px;
 }
 
+/* =========================
+   XAU / XAG COLUMNS
+========================= */
+
 .columns{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:10px;
+    gap:9px;
 }
 
 .card{
-    background:white;
+    background:#fff;
     border-radius:16px;
-    padding:9px;
+    padding:8px;
     box-shadow:0 2px 10px rgba(0,0,0,.10);
 }
 
@@ -52,30 +64,44 @@ h1{
     font-weight:900;
     background:#e9e9e9;
     border-radius:11px;
-    padding:10px;
-    margin-bottom:9px;
+    padding:9px;
+    margin-bottom:8px;
 }
+
+/* =========================
+   POINT
+========================= */
 
 .point{
     border:1px solid #ddd;
     border-radius:11px;
-    padding:8px;
+    padding:7px;
     margin-bottom:8px;
     background:#fff;
 }
 
-.point-name{
+.point-number{
     font-size:10px;
-    font-weight:800;
+    font-weight:900;
+    margin-bottom:3px;
+}
+
+.point-name{
+    font-size:9px;
+    font-weight:700;
     line-height:1.3;
-    min-height:32px;
+    min-height:34px;
     margin-bottom:6px;
 }
+
+/* =========================
+   BUTTONS
+========================= */
 
 .buttons{
     display:grid;
     grid-template-columns:1fr 1fr 1fr;
-    gap:5px;
+    gap:4px;
 }
 
 button{
@@ -83,49 +109,51 @@ button{
     background:#fafafa;
     color:#222;
     border-radius:8px;
-    padding:9px 2px;
-    font-size:12px;
+    padding:8px 2px;
+    font-size:11px;
     font-weight:900;
     cursor:pointer;
     -webkit-tap-highlight-color:transparent;
 }
 
-/* SELECTED +1 = GREEN */
+/* SELECTED +1 */
 
 button.selected.plus{
-    background:#d9f5df;
+    background:#c9f2d3;
     border:2px solid #16803c;
-    color:#14783b;
+    color:#08752f;
 }
 
-/* SELECTED -1 = RED */
+/* SELECTED -1 */
 
 button.selected.minus{
-    background:#ffe0e0;
+    background:#ffd6d6;
     border:2px solid #c62828;
-    color:#b42318;
+    color:#b51e1e;
 }
 
-/* SELECTED 0 = GREY */
+/* SELECTED 0 */
 
 button.selected.zero{
-    background:#dedede;
-    border:2px solid #777;
-    color:#444;
+    background:#d8d8d8;
+    border:2px solid #666;
+    color:#333;
 }
 
-/* SCORE */
+/* =========================
+   TOTAL SCORE
+========================= */
 
 .total{
-    margin-top:9px;
+    margin-top:8px;
     background:#f0f0f0;
     border-radius:11px;
-    padding:10px 5px;
+    padding:9px 4px;
     text-align:center;
 }
 
 .score{
-    font-size:25px;
+    font-size:23px;
     font-weight:900;
     line-height:1.2;
 }
@@ -138,14 +166,46 @@ button.selected.zero{
     color:#c62828;
 }
 
+.neutral{
+    color:#666;
+}
+
 .status{
-    margin-top:3px;
+    margin-top:5px;
     font-size:10px;
     font-weight:900;
     color:#555;
+    line-height:1.3;
 }
 
-/* RESULT */
+/* =========================
+   ELIGIBILITY
+========================= */
+
+.eligibility{
+    margin-top:7px;
+    padding:7px 4px;
+    border-radius:8px;
+    font-size:10px;
+    font-weight:900;
+    text-align:center;
+    background:#eee;
+    color:#666;
+}
+
+.eligibility.bull{
+    background:#d9f5df;
+    color:#146c32;
+}
+
+.eligibility.bear{
+    background:#ffe0e0;
+    color:#a51d1d;
+}
+
+/* =========================
+   FINAL RESULT
+========================= */
 
 .result{
     margin-top:11px;
@@ -155,6 +215,7 @@ button.selected.zero{
     font-size:13px;
     font-weight:900;
     background:#fff0cc;
+    line-height:1.5;
 }
 
 .result.good{
@@ -167,24 +228,33 @@ button.selected.zero{
     color:#9d1717;
 }
 
-/* RESET */
+.result.neutral{
+    background:#eeeeee;
+    color:#555;
+}
+
+/* =========================
+   RESET
+========================= */
 
 .reset{
     display:block;
     margin:11px auto;
-    padding:9px 22px;
+    padding:9px 24px;
     border:1px solid #bbb;
     background:#fff;
     border-radius:9px;
     font-weight:800;
 }
 
-/* NOTES */
+/* =========================
+   NOTES
+========================= */
 
 .notes{
     margin-top:12px;
-    background:white;
-    padding:12px;
+    background:#fff;
+    padding:13px;
     border-radius:15px;
     box-shadow:0 2px 8px rgba(0,0,0,.07);
 }
@@ -205,12 +275,14 @@ button.selected.zero{
     border-bottom:none;
 }
 
-/* MOBILE */
+/* =========================
+   MOBILE
+========================= */
 
 @media(max-width:500px){
 
     body{
-        padding:8px;
+        padding:7px;
     }
 
     h1{
@@ -218,11 +290,11 @@ button.selected.zero{
     }
 
     .columns{
-        gap:7px;
+        gap:6px;
     }
 
     .card{
-        padding:7px;
+        padding:6px;
     }
 
     .header{
@@ -231,11 +303,11 @@ button.selected.zero{
     }
 
     .point{
-        padding:7px;
+        padding:6px;
     }
 
     .point-name{
-        font-size:9px;
+        font-size:8.5px;
     }
 
     button{
@@ -244,50 +316,68 @@ button.selected.zero{
     }
 
     .score{
-        font-size:23px;
+        font-size:21px;
     }
 
 }
 
 </style>
+
 </head>
 
 <body>
 
+
 <h1>6-Point Strategy Score</h1>
 
 <div class="subtitle">
-Select +1, −1 or 0 for every point
+XAU and XAG calculated independently • ±4 = Eligibility
 </div>
 
 
-<!-- ================= XAU / XAG ================= -->
+<!-- =====================================================
+     XAU + XAG
+===================================================== -->
 
 <div class="columns">
 
 
-<!-- ================= XAU ================= -->
+<!-- =====================================================
+     XAU
+===================================================== -->
 
 <div class="card">
 
-<div class="header">XAU</div>
+<div class="header">
+XAU
+</div>
 
 
 <!-- POINT 1 -->
 
 <div class="point">
 
+<div class="point-number">
+POINT 1
+</div>
+
 <div class="point-name">
-1. W-POC formed upwards / downwards
+W-POC formed upwards / downwards
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xau',1)">+1</button>
+<button onclick="choose(this,'xau',0,1)">
++1
+</button>
 
-<button onclick="choose(this,'xau',-1)">−1</button>
+<button onclick="choose(this,'xau',0,-1)">
+−1
+</button>
 
-<button onclick="choose(this,'xau',0)">0</button>
+<button onclick="choose(this,'xau',0,0)">
+0
+</button>
 
 </div>
 
@@ -298,17 +388,27 @@ Select +1, −1 or 0 for every point
 
 <div class="point">
 
+<div class="point-number">
+POINT 2
+</div>
+
 <div class="point-name">
-2. Weekly VAH / VAL direction
+Price above / below Weekly VAH–VAL
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xau',1)">+1</button>
+<button onclick="choose(this,'xau',1,1)">
++1
+</button>
 
-<button onclick="choose(this,'xau',-1)">−1</button>
+<button onclick="choose(this,'xau',1,-1)">
+−1
+</button>
 
-<button onclick="choose(this,'xau',0)">0</button>
+<button onclick="choose(this,'xau',1,0)">
+0
+</button>
 
 </div>
 
@@ -319,17 +419,27 @@ Select +1, −1 or 0 for every point
 
 <div class="point">
 
+<div class="point-number">
+POINT 3
+</div>
+
 <div class="point-name">
-3. D-POC formed up / down
+D-POC formed up / down
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xau',1)">+1</button>
+<button onclick="choose(this,'xau',2,1)">
++1
+</button>
 
-<button onclick="choose(this,'xau',-1)">−1</button>
+<button onclick="choose(this,'xau',2,-1)">
+−1
+</button>
 
-<button onclick="choose(this,'xau',0)">0</button>
+<button onclick="choose(this,'xau',2,0)">
+0
+</button>
 
 </div>
 
@@ -340,17 +450,27 @@ Select +1, −1 or 0 for every point
 
 <div class="point">
 
+<div class="point-number">
+POINT 4
+</div>
+
 <div class="point-name">
-4. 15m CVD breaks last swing
+15m CVD breaks last swing
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xau',1)">+1</button>
+<button onclick="choose(this,'xau',3,1)">
++1
+</button>
 
-<button onclick="choose(this,'xau',-1)">−1</button>
+<button onclick="choose(this,'xau',3,-1)">
+−1
+</button>
 
-<button onclick="choose(this,'xau',0)">0</button>
+<button onclick="choose(this,'xau',3,0)">
+0
+</button>
 
 </div>
 
@@ -361,17 +481,27 @@ Select +1, −1 or 0 for every point
 
 <div class="point">
 
+<div class="point-number">
+POINT 5
+</div>
+
 <div class="point-name">
-5. Weekly + Daily VWAP direction
+Weekly + Daily VWAP direction
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xau',1)">+1</button>
+<button onclick="choose(this,'xau',4,1)">
++1
+</button>
 
-<button onclick="choose(this,'xau',-1)">−1</button>
+<button onclick="choose(this,'xau',4,-1)">
+−1
+</button>
 
-<button onclick="choose(this,'xau',0)">0</button>
+<button onclick="choose(this,'xau',4,0)">
+0
+</button>
 
 </div>
 
@@ -382,17 +512,27 @@ Select +1, −1 or 0 for every point
 
 <div class="point">
 
+<div class="point-number">
+POINT 6
+</div>
+
 <div class="point-name">
-6. Daily VAH / VAL direction
+Price above / below Daily VAH–VAL
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xau',1)">+1</button>
+<button onclick="choose(this,'xau',5,1)">
++1
+</button>
 
-<button onclick="choose(this,'xau',-1)">−1</button>
+<button onclick="choose(this,'xau',5,-1)">
+−1
+</button>
 
-<button onclick="choose(this,'xau',0)">0</button>
+<button onclick="choose(this,'xau',5,0)">
+0
+</button>
 
 </div>
 
@@ -405,7 +545,7 @@ Select +1, −1 or 0 for every point
 
 <div id="xauScore" class="score">
 <span class="positive">+0</span>
-&nbsp;
+&nbsp;&nbsp;
 <span class="negative">−0</span>
 </div>
 
@@ -413,33 +553,52 @@ Select +1, −1 or 0 for every point
 0 / 6 SELECTED
 </div>
 
+<div id="xauEligibility" class="eligibility">
+NOT ELIGIBLE
 </div>
 
 </div>
 
+</div>
 
-<!-- ================= XAG ================= -->
+
+
+<!-- =====================================================
+     XAG
+===================================================== -->
 
 <div class="card">
 
-<div class="header">XAG</div>
+<div class="header">
+XAG
+</div>
 
 
 <!-- POINT 1 -->
 
 <div class="point">
 
+<div class="point-number">
+POINT 1
+</div>
+
 <div class="point-name">
-1. W-POC formed upwards / downwards
+W-POC formed upwards / downwards
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xag',1)">+1</button>
+<button onclick="choose(this,'xag',0,1)">
++1
+</button>
 
-<button onclick="choose(this,'xag',-1)">−1</button>
+<button onclick="choose(this,'xag',0,-1)">
+−1
+</button>
 
-<button onclick="choose(this,'xag',0)">0</button>
+<button onclick="choose(this,'xag',0,0)">
+0
+</button>
 
 </div>
 
@@ -450,17 +609,27 @@ Select +1, −1 or 0 for every point
 
 <div class="point">
 
+<div class="point-number">
+POINT 2
+</div>
+
 <div class="point-name">
-2. Weekly VAH / VAL direction
+Price above / below Weekly VAH–VAL
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xag',1)">+1</button>
+<button onclick="choose(this,'xag',1,1)">
++1
+</button>
 
-<button onclick="choose(this,'xag',-1)">−1</button>
+<button onclick="choose(this,'xag',1,-1)">
+−1
+</button>
 
-<button onclick="choose(this,'xag',0)">0</button>
+<button onclick="choose(this,'xag',1,0)">
+0
+</button>
 
 </div>
 
@@ -471,17 +640,27 @@ Select +1, −1 or 0 for every point
 
 <div class="point">
 
+<div class="point-number">
+POINT 3
+</div>
+
 <div class="point-name">
-3. D-POC formed up / down
+D-POC formed up / down
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xag',1)">+1</button>
+<button onclick="choose(this,'xag',2,1)">
++1
+</button>
 
-<button onclick="choose(this,'xag',-1)">−1</button>
+<button onclick="choose(this,'xag',2,-1)">
+−1
+</button>
 
-<button onclick="choose(this,'xag',0)">0</button>
+<button onclick="choose(this,'xag',2,0)">
+0
+</button>
 
 </div>
 
@@ -492,17 +671,27 @@ Select +1, −1 or 0 for every point
 
 <div class="point">
 
+<div class="point-number">
+POINT 4
+</div>
+
 <div class="point-name">
-4. 15m CVD breaks last swing
+15m CVD breaks last swing
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xag',1)">+1</button>
+<button onclick="choose(this,'xag',3,1)">
++1
+</button>
 
-<button onclick="choose(this,'xag',-1)">−1</button>
+<button onclick="choose(this,'xag',3,-1)">
+−1
+</button>
 
-<button onclick="choose(this,'xag',0)">0</button>
+<button onclick="choose(this,'xag',3,0)">
+0
+</button>
 
 </div>
 
@@ -513,17 +702,27 @@ Select +1, −1 or 0 for every point
 
 <div class="point">
 
+<div class="point-number">
+POINT 5
+</div>
+
 <div class="point-name">
-5. Weekly + Daily VWAP direction
+Weekly + Daily VWAP direction
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xag',1)">+1</button>
+<button onclick="choose(this,'xag',4,1)">
++1
+</button>
 
-<button onclick="choose(this,'xag',-1)">−1</button>
+<button onclick="choose(this,'xag',4,-1)">
+−1
+</button>
 
-<button onclick="choose(this,'xag',0)">0</button>
+<button onclick="choose(this,'xag',4,0)">
+0
+</button>
 
 </div>
 
@@ -534,17 +733,27 @@ Select +1, −1 or 0 for every point
 
 <div class="point">
 
+<div class="point-number">
+POINT 6
+</div>
+
 <div class="point-name">
-6. Daily VAH / VAL direction
+Price above / below Daily VAH–VAL
 </div>
 
 <div class="buttons">
 
-<button onclick="choose(this,'xag',1)">+1</button>
+<button onclick="choose(this,'xag',5,1)">
++1
+</button>
 
-<button onclick="choose(this,'xag',-1)">−1</button>
+<button onclick="choose(this,'xag',5,-1)">
+−1
+</button>
 
-<button onclick="choose(this,'xag',0)">0</button>
+<button onclick="choose(this,'xag',5,0)">
+0
+</button>
 
 </div>
 
@@ -557,7 +766,7 @@ Select +1, −1 or 0 for every point
 
 <div id="xagScore" class="score">
 <span class="positive">+0</span>
-&nbsp;
+&nbsp;&nbsp;
 <span class="negative">−0</span>
 </div>
 
@@ -565,18 +774,25 @@ Select +1, −1 or 0 for every point
 0 / 6 SELECTED
 </div>
 
+<div id="xagEligibility" class="eligibility">
+NOT ELIGIBLE
 </div>
 
 </div>
 
 </div>
 
+</div>
 
-<!-- ================= DECISION ================= -->
 
-<div id="result" class="result">
 
-Select all 6 points for both metals.
+<!-- =====================================================
+     FINAL DECISION
+===================================================== -->
+
+<div id="result" class="result neutral">
+
+Select points to calculate eligibility.
 
 </div>
 
@@ -586,206 +802,288 @@ RESET
 </button>
 
 
-<!-- ================= NOTES ================= -->
+
+<!-- =====================================================
+     STRATEGY NOTES
+===================================================== -->
 
 <div class="notes">
 
-<h2>Your Strategy Rules</h2>
+<h2>Strategy Rules</h2>
+
 
 <div class="note">
+
+<b>±4 Eligibility:</b>
+A metal becomes eligible once it reaches +4 or −4.
+
+</div>
+
+
+<div class="note">
+
 <b>Normal Trade:</b>
 +4 or −4.
+
 </div>
 
+
 <div class="note">
+
 <b>Good Trade:</b>
 +5 / +6 or −5 / −6.
+
 </div>
 
-<div class="note">
-<b>XAU / XAG:</b>
-If directions are opposite → NO TRADE.
-XAG is dominant.
-</div>
 
 <div class="note">
-<b>Same direction:</b>
-Prefer the metal with the stronger score, but take the cleaner location.
+
+<b>XAU / XAG Opposite:</b>
+Only judge them opposite when BOTH metals have reached the ±4 eligibility threshold.
+
 </div>
 
-<div class="note">
-<b>Entry priority:</b>
-Daily VWAP = best option.
-VAL / VAH (Daily / Weekly) = second best.
-</div>
 
 <div class="note">
+
+<b>Example:</b>
+XAU +3 and XAG −5 are NOT considered opposite because XAU is not yet eligible.
+
+</div>
+
+
+<div class="note">
+
+<b>Same Direction:</b>
+If both eligible metals have the same direction, prefer the stronger score and cleaner location.
+
+</div>
+
+
+<div class="note">
+
+<b>XAG Dominance:</b>
+When the situation is otherwise equal, XAG is dominant.
+
+</div>
+
+
+<div class="note">
+
+<b>Entry Priority:</b>
+Daily VWAP = best option. VAL / VAH (Daily / Weekly) = second best.
+
+</div>
+
+
+<div class="note">
+
 <b>VAL / VAH:</b>
-Needs at least one additional thing such as Band 1 or POC.
+VAL or VAH alone is NOT an entry. It must have at least one additional confluence such as Band 1 or POC.
+
 </div>
 
+
 <div class="note">
+
 <b>Sweep:</b>
-Additional sniper-entry confirmation; not required.
+Liquidity sweep is an additional sniper-entry confirmation. It is not required.
+
 </div>
 
+
 <div class="note">
+
 <b>Monday:</b>
 Use previous week's POC / VAH / VAL.
+
 </div>
 
+
 <div class="note">
+
+<b>Pending Trade:</b>
+Use a pending order at the best-defined entry location.
+
+</div>
+
+
+<div class="note">
+
+<b>Stop Loss:</b>
+Try to place SL below / above a major structure.
+
+</div>
+
+
+<div class="note">
+
 <b>Target:</b>
 Best TP = PDH or PDL.
+
 </div>
 
+
 <div class="note">
+
 <b>Preferred RR:</b>
 1:3.
+
 </div>
+
 
 <div class="note">
-<b>Entry:</b>
-Daily VWAP is the best location. VAL / VAH is the second-best location.
-VAL / VAH alone is not enough; another confluence is required.
-</div>
 
-<div class="note">
-<b>Important:</b>
-A liquidity sweep is an additional confirmation/sniper entry, not mandatory.
+<b>Trial:</b>
+Record XAU and XAG from the same entry to compare which performs better.
+
 </div>
 
 </div>
+
 
 
 <script>
 
-/*
-==================================================
-6 POINT STORAGE
-==================================================
-null = not selected
-1    = positive point
--1   = negative point
-0    = neutral
-==================================================
-*/
 
-let xau = [null,null,null,null,null,null];
+/* =====================================================
+   DATA
 
-let xag = [null,null,null,null,null,null];
+   null = not selected
+    1   = +1
+   -1   = -1
+    0   = neutral
 
+===================================================== */
 
-/*
-==================================================
-WHEN A BUTTON IS PRESSED
-==================================================
-*/
+let xau = [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+];
 
-function choose(button,metal,value){
-
-    /*
-    Find which metal was selected
-    */
-
-    let array =
-        metal === 'xau'
-        ? xau
-        : xag;
+let xag = [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+];
 
 
-    /*
-    Find which of the six points
-    */
 
-    let card =
-        button.closest('.card');
+/* =====================================================
+   SELECT A POINT
 
-    let points =
-        card.querySelectorAll('.point');
+   This function is deliberately simple.
 
-    let point =
-        button.closest('.point');
+   Every individual point remembers its own
+   selection.
 
-    let pointIndex =
-        Array.from(points).indexOf(point);
+   Therefore all six selected buttons can remain
+   highlighted at the same time.
+===================================================== */
+
+function choose(button, metal, pointIndex, value){
+
+    let array;
+
+    if(metal === "xau"){
+        array = xau;
+    }else{
+        array = xag;
+    }
 
 
-    /*
-    Save the selection
-    */
+    /* Save the value */
 
     array[pointIndex] = value;
 
 
-    /*
-    Remove highlighting from
-    all three buttons for THIS point
-    */
+    /* Find this point */
+
+    let point =
+        button.closest(".point");
+
+
+    /* Remove old highlight from this point only */
 
     let buttons =
-        point.querySelectorAll('button');
+        point.querySelectorAll("button");
+
 
     buttons.forEach(function(b){
 
         b.classList.remove(
-            'selected',
-            'plus',
-            'minus',
-            'zero'
+            "selected",
+            "plus",
+            "minus",
+            "zero"
         );
 
     });
 
 
-    /*
-    Highlight the button that
-    was actually selected
-    */
+    /* Highlight selected button */
 
-    button.classList.add('selected');
+    button.classList.add("selected");
 
 
     if(value === 1){
 
-        button.classList.add('plus');
+        button.classList.add("plus");
 
     }
 
     else if(value === -1){
 
-        button.classList.add('minus');
+        button.classList.add("minus");
 
     }
 
-    else if(value === 0){
+    else{
 
-        button.classList.add('zero');
+        button.classList.add("zero");
 
     }
 
 
-    /*
-    Recalculate totals
-    */
+    /* Recalculate */
 
     update();
 
 }
 
 
-/*
-==================================================
-CALCULATE POSITIVE AND NEGATIVE COUNTS SEPARATELY
-==================================================
-*/
+
+/* =====================================================
+   CALCULATE
+
+   IMPORTANT:
+
+   Positive and negative points are counted
+   separately.
+
+   Example:
+
+   +1 +1 +1 -1 -1 0
+
+   becomes:
+
+   positive = 3
+   negative = 2
+
+   NOT +1.
+===================================================== */
 
 function calculate(array){
 
     let positive = 0;
-
     let negative = 0;
-
     let selected = 0;
 
 
@@ -797,13 +1095,11 @@ function calculate(array){
 
         }
 
-
         if(value === 1){
 
             positive++;
 
         }
-
 
         if(value === -1){
 
@@ -816,49 +1112,88 @@ function calculate(array){
 
     return {
 
-        positive:positive,
-
-        negative:negative,
-
-        selected:selected
+        positive: positive,
+        negative: negative,
+        selected: selected
 
     };
 
 }
 
 
-/*
-==================================================
-DISPLAY SCORE
-==================================================
-*/
 
-function show(metal,data){
+/* =====================================================
+   DIRECTION
 
-    let score =
-        document.getElementById(
-            metal + 'Score'
-        );
+   +4 or higher = bullish / positive
 
-    let status =
-        document.getElementById(
-            metal + 'Status'
-        );
+   -4 or lower = bearish / negative
+
+   Anything between = NOT ELIGIBLE
+
+===================================================== */
+
+function direction(data){
+
+    /*
+       Positive eligibility
+    */
+
+    if(data.positive >= 4){
+
+        return 1;
+
+    }
 
 
     /*
-    IMPORTANT:
-    Positive and negative are shown
-    separately.
-
-    Example:
-
-    +3 −2
-
-    NOT:
-
-    +1
+       Negative eligibility
     */
+
+    if(data.negative >= 4){
+
+        return -1;
+
+    }
+
+
+    /*
+       Not eligible
+    */
+
+    return 0;
+
+}
+
+
+
+/* =====================================================
+   DISPLAY INDIVIDUAL METAL
+===================================================== */
+
+function displayMetal(metal, data){
+
+    let score =
+        document.getElementById(
+            metal + "Score"
+        );
+
+
+    let status =
+        document.getElementById(
+            metal + "Status"
+        );
+
+
+    let eligibility =
+        document.getElementById(
+            metal + "Eligibility"
+        );
+
+
+    /* =========================
+       SCORE
+    ========================= */
 
     score.innerHTML =
         '<span class="positive">+' +
@@ -870,151 +1205,102 @@ function show(metal,data){
         '</span>';
 
 
-    /*
-    Number selected
-    */
+    /* =========================
+       SELECTED COUNT
+    ========================= */
 
-    if(data.selected < 6){
-
-        status.innerHTML =
-            data.selected +
-            ' / 6 SELECTED';
-
-        return;
-
-    }
+    status.innerHTML =
+        data.selected +
+        " / 6 SELECTED";
 
 
-    /*
-    Determine strength
-    */
+    /* =========================
+       ELIGIBILITY
+    ========================= */
 
-    let strongest =
-        Math.max(
-            data.positive,
-            data.negative
+    let dir =
+        direction(data);
+
+
+    eligibility.className =
+        "eligibility";
+
+
+    if(dir === 1){
+
+        eligibility.innerHTML =
+            "✓ ELIGIBLE — BULLISH";
+
+        eligibility.classList.add(
+            "bull"
         );
 
-
-    if(strongest >= 5){
-
-        status.innerHTML =
-            'GOOD TRADE';
-
     }
 
-    else if(strongest === 4){
+    else if(dir === -1){
 
-        status.innerHTML =
-            'NORMAL TRADE';
+        eligibility.innerHTML =
+            "✓ ELIGIBLE — BEARISH";
+
+        eligibility.classList.add(
+            "bear"
+        );
 
     }
 
     else{
 
-        status.innerHTML =
-            'NO TRADE';
+        eligibility.innerHTML =
+            "NOT ELIGIBLE — NEED ±4";
 
     }
 
 }
 
 
-/*
-==================================================
-DIRECTION
-==================================================
 
-The side with MORE points determines
-the direction.
-
-Example:
-
-+4 / -2 = positive direction
-
-+2 / -4 = negative direction
-
-+3 / -3 = neutral
-==================================================
-*/
-
-function direction(data){
-
-    if(data.positive > data.negative){
-
-        return 1;
-
-    }
-
-    if(data.negative > data.positive){
-
-        return -1;
-
-    }
-
-    return 0;
-
-}
-
-
-/*
-==================================================
-MAIN UPDATE
-==================================================
-*/
+/* =====================================================
+   FINAL DECISION
+===================================================== */
 
 function update(){
 
-    let A = calculate(xau);
+    let A =
+        calculate(xau);
 
-    let B = calculate(xag);
+    let B =
+        calculate(xag);
 
 
     /*
-    Update XAU display
+       Update XAU
     */
 
-    show('xau',A);
+    displayMetal(
+        "xau",
+        A
+    );
 
 
     /*
-    Update XAG display
+       Update XAG
     */
 
-    show('xag',B);
+    displayMetal(
+        "xag",
+        B
+    );
 
 
     /*
-    Decision box
+       Final result box
     */
 
     let result =
-        document.getElementById('result');
+        document.getElementById(
+            "result"
+        );
 
-
-    /*
-    Need all six points selected
-    */
-
-    if(
-        A.selected < 6 ||
-        B.selected < 6
-    ){
-
-        result.innerHTML =
-            'Select all 6 points for both metals.';
-
-        result.className =
-            'result';
-
-        return;
-
-    }
-
-
-    /*
-    Determine direction
-    */
 
     let xauDirection =
         direction(A);
@@ -1023,11 +1309,22 @@ function update(){
         direction(B);
 
 
-    /*
-    If both metals have a clear
-    direction and they disagree:
-    NO TRADE
-    */
+    /* =================================================
+       CASE 1
+
+       BOTH are eligible AND opposite.
+
+       This is the important correction.
+
+       Example:
+
+       XAU +4
+       XAG -5
+
+       = OPPOSITE
+       = NO TRADE
+
+    ================================================= */
 
     if(
         xauDirection !== 0 &&
@@ -1036,25 +1333,116 @@ function update(){
     ){
 
         result.innerHTML =
-            '⛔ XAU and XAG are opposite → NO TRADE';
+            "⛔ XAU + XAG OPPOSITE → NO TRADE";
 
         result.className =
-            'result bad';
+            "result bad";
 
         return;
 
     }
 
 
-    /*
-    Strength of each metal
-    */
+    /* =================================================
+       CASE 2
+
+       Neither is eligible yet.
+    ================================================= */
+
+    if(
+        xauDirection === 0 &&
+        xagDirection === 0
+    ){
+
+        result.innerHTML =
+            "⏳ NO ELIGIBLE METAL YET — NEED +4 OR −4";
+
+        result.className =
+            "result neutral";
+
+        return;
+
+    }
+
+
+    /* =================================================
+       CASE 3
+
+       Only XAU is eligible.
+    ================================================= */
+
+    if(
+        xauDirection !== 0 &&
+        xagDirection === 0
+    ){
+
+        let sign =
+            xauDirection === 1
+            ? "BULLISH"
+            : "BEARISH";
+
+
+        result.innerHTML =
+            "XAU ✓ ELIGIBLE — " +
+            sign +
+            "<br>" +
+            "XAG not yet eligible.";
+
+        result.className =
+            "result good";
+
+        return;
+
+    }
+
+
+    /* =================================================
+       CASE 4
+
+       Only XAG is eligible.
+    ================================================= */
+
+    if(
+        xauDirection === 0 &&
+        xagDirection !== 0
+    ){
+
+        let sign =
+            xagDirection === 1
+            ? "BULLISH"
+            : "BEARISH";
+
+
+        result.innerHTML =
+            "XAG ✓ ELIGIBLE — " +
+            sign +
+            "<br>" +
+            "XAU not yet eligible.";
+
+        result.className =
+            "result good";
+
+        return;
+
+    }
+
+
+    /* =================================================
+       CASE 5
+
+       BOTH eligible and SAME direction.
+
+       Choose stronger score.
+
+       XAG wins ties because XAG is dominant.
+    ================================================= */
 
     let xauStrength =
         Math.max(
             A.positive,
             A.negative
         );
+
 
     let xagStrength =
         Math.max(
@@ -1063,132 +1451,103 @@ function update(){
         );
 
 
-    /*
-    Need at least four points
-    */
-
-    if(
-        xauStrength < 4 &&
-        xagStrength < 4
-    ){
-
-        result.innerHTML =
-            '⛔ Neither metal reaches ±4 → NO TRADE';
-
-        result.className =
-            'result bad';
-
-        return;
-
-    }
-
-
-    /*
-    XAG is dominant if scores are equal.
-    Otherwise choose stronger metal.
-    */
-
     let preferred;
+
 
     if(xagStrength >= xauStrength){
 
-        preferred = 'XAG';
+        preferred = "XAG";
 
     }
 
     else{
 
-        preferred = 'XAU';
+        preferred = "XAU";
 
     }
 
 
-    /*
-    Final result
-    */
+    let directionText =
+        xauDirection === 1
+        ? "BULLISH"
+        : "BEARISH";
+
 
     result.innerHTML =
-        '✅ XAU: +' +
-        A.positive +
-        ' / −' +
-        A.negative +
-        '&nbsp;&nbsp; | &nbsp;&nbsp;' +
-        'XAG: +' +
-        B.positive +
-        ' / −' +
-        B.negative +
-        '&nbsp;&nbsp; | &nbsp;&nbsp;' +
-        'Preferred: ' +
-        preferred;
+        "✅ BOTH ELIGIBLE — " +
+        directionText +
+        "<br>" +
+        "Preferred: " +
+        preferred +
+        " — use the cleaner location";
 
 
     result.className =
-        'result good';
+        "result good";
 
 }
 
 
-/*
-==================================================
-RESET
-==================================================
-*/
+
+/* =====================================================
+   RESET EVERYTHING
+===================================================== */
 
 function resetAll(){
 
-    xau = [null,null,null,null,null,null];
+    xau = [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+    ];
 
-    xag = [null,null,null,null,null,null];
+
+    xag = [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+    ];
 
 
     /*
-    Remove every highlight
+       Remove every highlight
     */
 
     document
-        .querySelectorAll('button')
+        .querySelectorAll("button")
         .forEach(function(button){
 
             button.classList.remove(
-                'selected',
-                'plus',
-                'minus',
-                'zero'
+                "selected",
+                "plus",
+                "minus",
+                "zero"
             );
 
         });
 
 
     /*
-    Reset display
+       Recalculate everything
     */
 
-    document.getElementById('xauScore').innerHTML =
-        '<span class="positive">+0</span>' +
-        '&nbsp;&nbsp;' +
-        '<span class="negative">−0</span>';
-
-
-    document.getElementById('xagScore').innerHTML =
-        '<span class="positive">+0</span>' +
-        '&nbsp;&nbsp;' +
-        '<span class="negative">−0</span>';
-
-
-    document.getElementById('xauStatus').innerHTML =
-        '0 / 6 SELECTED';
-
-    document.getElementById('xagStatus').innerHTML =
-        '0 / 6 SELECTED';
-
-
-    document.getElementById('result').innerHTML =
-        'Select all 6 points for both metals.';
-
-    document.getElementById('result').className =
-        'result';
+    update();
 
 }
+
+
+
+/* =====================================================
+   INITIAL STATE
+===================================================== */
+
+update();
 
 </script>
 
