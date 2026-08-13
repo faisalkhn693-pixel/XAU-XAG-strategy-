@@ -3,654 +3,1376 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XAU XAG Strategy</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;padding:9px;background:#f3f4f6;color:#111;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-h1{text-align:center;font-size:23px;font-weight:900;margin:7px 0 2px}
-.subtitle{text-align:center;color:#666;font-size:12px;margin-bottom:12px}
-.columns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.card{background:#fff;border-radius:15px;padding:7px;box-shadow:0 2px 9px rgba(0,0,0,.10)}
-.header{text-align:center;font-size:20px;font-weight:900;background:#e9e9e9;border-radius:10px;padding:8px;margin-bottom:7px}
-.point{background:#fff;border:1px solid #ddd;border-radius:10px;padding:7px;margin-bottom:7px}
-.point-number{font-size:9px;font-weight:900;margin-bottom:2px}
-.point-name{font-size:8.5px;font-weight:700;line-height:1.3;min-height:32px;margin-bottom:5px}
-.buttons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
-button{border:1px solid #ccc;background:#fafafa;color:#222;border-radius:7px;padding:8px 2px;font-size:10px;font-weight:900;cursor:pointer;-webkit-tap-highlight-color:transparent}
-button.selected.plus{background:#baf0c8!important;color:#075f27!important;border:2px solid #08752f!important;box-shadow:0 0 0 2px rgba(8,117,47,.15)}
-button.selected.minus{background:#ffc5c5!important;color:#9d1111!important;border:2px solid #c62828!important;box-shadow:0 0 0 2px rgba(198,40,40,.15)}
-button.selected.zero{background:#cfcfcf!important;color:#333!important;border:2px solid #666!important;box-shadow:0 0 0 2px rgba(80,80,80,.15)}
-.total{margin-top:7px;background:#f0f0f0;border-radius:10px;padding:9px 3px;text-align:center}
-.score{font-size:22px;font-weight:900}
-.positive{color:#08752f}.negative{color:#c62828}
-.status{margin-top:4px;font-size:9px;font-weight:900;color:#666}
-.eligibility{margin-top:6px;padding:6px 2px;border-radius:7px;background:#e8e8e8;color:#666;font-size:9px;font-weight:900}
-.eligibility.bull{background:#c9f2d3;color:#08752f}.eligibility.bear{background:#ffd1d1;color:#a51b1b}
-.result{margin-top:10px;padding:12px;border-radius:11px;text-align:center;font-size:12px;font-weight:900;line-height:1.5;background:#eeeeee;color:#555}
-.result.good{background:#d9f5df;color:#145c2c}.result.bad{background:#ffdede;color:#9d1717}.result.wait{background:#fff0cc;color:#765600}
-.reset{display:block;margin:10px auto;padding:8px 22px;border:1px solid #bbb;background:white;border-radius:8px;font-weight:800}
 
-/* ADDITIONS */
-.panel{margin-top:11px;background:#fff;padding:12px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.07)}
-.panel h2{margin:0 0 8px;font-size:16px}
-.snapshot{background:#f0f0f0;border-radius:9px;padding:8px;font-size:10px;font-weight:900;line-height:1.5;margin-bottom:8px;text-align:center}
-.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.field label{display:block;font-size:9px;font-weight:900;margin-bottom:3px}
-select,input,textarea{width:100%;padding:9px;border:1px solid #ccc;border-radius:8px;background:#fafafa;color:#111;font:inherit;font-size:11px}
-textarea{min-height:58px;resize:vertical}
-.full{grid-column:1/-1}
-.save{width:100%;margin-top:8px;background:#111;color:#fff;border:0;padding:11px;border-radius:9px;font-size:11px}
-.statsgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
-.stat{background:#f0f0f0;border-radius:9px;padding:8px;text-align:center}
-.stat b{display:block;font-size:17px}.stat span{font-size:8px;color:#666;font-weight:900}
-.trade{border:1px solid #ddd;border-radius:10px;padding:9px;margin-top:7px;font-size:10px;line-height:1.5}
-.tradehead{font-size:11px;font-weight:900}
-.win{color:#08752f}.loss{color:#c62828}.be{color:#765600}
-.deleteBtn{margin-top:6px;padding:6px 12px;background:#fff;color:#c62828;border:1px solid #c62828}
-.clearAll{margin-top:8px;width:100%;padding:9px;background:#fff;color:#c62828;border:1px solid #c62828;border-radius:8px}
-.empty{font-size:10px;color:#666;text-align:center;padding:7px}
+<title>XAU XAG Strategy</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    padding:9px;
+    background:#f3f4f6;
+    color:#111;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+h1{
+    text-align:center;
+    font-size:23px;
+    font-weight:900;
+    margin:7px 0 2px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#666;
+    font-size:12px;
+    margin-bottom:12px;
+}
+
+.columns{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+}
+
+.card{
+    background:#fff;
+    border-radius:15px;
+    padding:7px;
+    box-shadow:0 2px 9px rgba(0,0,0,.10);
+}
+
+.header{
+    text-align:center;
+    font-size:20px;
+    font-weight:900;
+    background:#e9e9e9;
+    border-radius:10px;
+    padding:8px;
+    margin-bottom:7px;
+}
+
+.point{
+    background:#fff;
+    border:1px solid #ddd;
+    border-radius:10px;
+    padding:7px;
+    margin-bottom:7px;
+}
+
+.point-number{
+    font-size:9px;
+    font-weight:900;
+    margin-bottom:2px;
+}
+
+.point-name{
+    font-size:8.5px;
+    font-weight:700;
+    line-height:1.3;
+    min-height:32px;
+    margin-bottom:5px;
+}
+
+.buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:4px;
+}
+
+button{
+    border:1px solid #ccc;
+    background:#fafafa;
+    color:#222;
+    border-radius:7px;
+    padding:8px 2px;
+    font-size:10px;
+    font-weight:900;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+}
+
+button.selected.plus{
+    background:#baf0c8!important;
+    color:#075f27!important;
+    border:2px solid #08752f!important;
+    box-shadow:0 0 0 2px rgba(8,117,47,.15);
+}
+
+button.selected.minus{
+    background:#ffc5c5!important;
+    color:#9d1111!important;
+    border:2px solid #c62828!important;
+    box-shadow:0 0 0 2px rgba(198,40,40,.15);
+}
+
+button.selected.zero{
+    background:#cfcfcf!important;
+    color:#333!important;
+    border:2px solid #666!important;
+    box-shadow:0 0 0 2px rgba(80,80,80,.15);
+}
+
+.total{
+    margin-top:7px;
+    background:#f0f0f0;
+    border-radius:10px;
+    padding:9px 3px;
+    text-align:center;
+}
+
+.score{
+    font-size:22px;
+    font-weight:900;
+}
+
+.positive{
+    color:#08752f;
+}
+
+.negative{
+    color:#c62828;
+}
+
+.status{
+    margin-top:4px;
+    font-size:9px;
+    font-weight:900;
+    color:#666;
+}
+
+.eligibility{
+    margin-top:6px;
+    padding:6px 2px;
+    border-radius:7px;
+    background:#e8e8e8;
+    color:#666;
+    font-size:9px;
+    font-weight:900;
+}
+
+.eligibility.bull{
+    background:#c9f2d3;
+    color:#08752f;
+}
+
+.eligibility.bear{
+    background:#ffd1d1;
+    color:#a51b1b;
+}
+
+/* MAIN DECISION */
+.result{
+    margin-top:10px;
+    padding:14px 10px;
+    border-radius:11px;
+    text-align:center;
+    font-size:12px;
+    font-weight:900;
+    line-height:1.55;
+    background:#eeeeee;
+    color:#555;
+}
+
+.result.good{
+    background:#d9f5df;
+    color:#145c2c;
+}
+
+.result.bad{
+    background:#ffdede;
+    color:#9d1717;
+}
+
+.result.wait{
+    background:#fff0cc;
+    color:#765600;
+}
+
+.result.info{
+    background:#e3edf8;
+    color:#244b70;
+}
+
+.result .main{
+    font-size:14px;
+    font-weight:950;
+}
+
+.result .sub{
+    margin-top:3px;
+    font-size:11px;
+    font-weight:900;
+}
+
+.result .small{
+    margin-top:6px;
+    font-size:9px;
+    font-weight:800;
+    opacity:.85;
+}
+
+.reset{
+    display:block;
+    margin:10px auto;
+    padding:8px 22px;
+    border:1px solid #bbb;
+    background:white;
+    border-radius:8px;
+    font-weight:800;
+}
 
 @media(max-width:500px){
-body{padding:6px}h1{font-size:21px}.columns{gap:5px}.card{padding:5px}.header{font-size:18px;padding:7px}
-.point{padding:5px}.point-name{font-size:8px}button{font-size:9px;padding:8px 1px}.score{font-size:20px}
+    body{
+        padding:6px;
+    }
+
+    h1{
+        font-size:21px;
+    }
+
+    .columns{
+        gap:5px;
+    }
+
+    .card{
+        padding:5px;
+    }
+
+    .header{
+        font-size:18px;
+        padding:7px;
+    }
+
+    .point{
+        padding:5px;
+    }
+
+    .point-name{
+        font-size:8px;
+    }
+
+    button{
+        font-size:9px;
+        padding:8px 1px;
+    }
+
+    .score{
+        font-size:20px;
+    }
+
+    .result{
+        font-size:11px;
+    }
+
+    .result .main{
+        font-size:13px;
+    }
 }
 </style>
 </head>
+
 <body>
 
 <h1>6-Point Strategy Score</h1>
-<div class="subtitle">XAU & XAG • +4 / −4 = Eligibility</div>
+
+<div class="subtitle">
+XAU & XAG • +4 / −4 = Eligibility
+</div>
 
 <div class="columns">
 
-<!-- XAU -->
+<!-- ================= XAU ================= -->
+
 <div class="card">
+
 <div class="header">XAU</div>
 
-<div class="point"><div class="point-number">POINT 1</div><div class="point-name">W-POC formed upwards / downwards</div><div class="buttons">
+<div class="point">
+<div class="point-number">POINT 1</div>
+<div class="point-name">
+W-POC formed upwards / downwards
+</div>
+
+<div class="buttons">
 <button onclick="choose(this,'xau',0,1)">+1</button>
 <button onclick="choose(this,'xau',0,-1)">−1</button>
 <button onclick="choose(this,'xau',0,0)">0</button>
-</div></div>
+</div>
+</div>
 
-<div class="point"><div class="point-number">POINT 2</div><div class="point-name">Weekly VAH / VAL direction</div><div class="buttons">
+
+<div class="point">
+<div class="point-number">POINT 2</div>
+<div class="point-name">
+Weekly VAH / VAL direction
+</div>
+
+<div class="buttons">
 <button onclick="choose(this,'xau',1,1)">+1</button>
 <button onclick="choose(this,'xau',1,-1)">−1</button>
 <button onclick="choose(this,'xau',1,0)">0</button>
-</div></div>
+</div>
+</div>
 
-<div class="point"><div class="point-number">POINT 3</div><div class="point-name">D-POC formed up / down</div><div class="buttons">
+
+<div class="point">
+<div class="point-number">POINT 3</div>
+<div class="point-name">
+D-POC formed up / down
+</div>
+
+<div class="buttons">
 <button onclick="choose(this,'xau',2,1)">+1</button>
 <button onclick="choose(this,'xau',2,-1)">−1</button>
 <button onclick="choose(this,'xau',2,0)">0</button>
-</div></div>
+</div>
+</div>
 
-<div class="point"><div class="point-number">POINT 4</div><div class="point-name">15m CVD breaks last swing</div><div class="buttons">
+
+<div class="point">
+<div class="point-number">POINT 4</div>
+<div class="point-name">
+15m CVD breaks last swing
+</div>
+
+<div class="buttons">
 <button onclick="choose(this,'xau',3,1)">+1</button>
 <button onclick="choose(this,'xau',3,-1)">−1</button>
 <button onclick="choose(this,'xau',3,0)">0</button>
-</div></div>
+</div>
+</div>
 
-<div class="point"><div class="point-number">POINT 5</div><div class="point-name">Weekly + Daily VWAP direction</div><div class="buttons">
+
+<div class="point">
+<div class="point-number">POINT 5</div>
+<div class="point-name">
+Weekly + Daily VWAP direction
+</div>
+
+<div class="buttons">
 <button onclick="choose(this,'xau',4,1)">+1</button>
 <button onclick="choose(this,'xau',4,-1)">−1</button>
 <button onclick="choose(this,'xau',4,0)">0</button>
-</div></div>
+</div>
+</div>
 
-<div class="point"><div class="point-number">POINT 6</div><div class="point-name">Daily VAH / VAL direction</div><div class="buttons">
+
+<div class="point">
+<div class="point-number">POINT 6</div>
+<div class="point-name">
+Daily VAH / VAL direction
+</div>
+
+<div class="buttons">
 <button onclick="choose(this,'xau',5,1)">+1</button>
 <button onclick="choose(this,'xau',5,-1)">−1</button>
 <button onclick="choose(this,'xau',5,0)">0</button>
-</div></div>
+</div>
+</div>
+
 
 <div class="total">
-<div id="xauScore" class="score"><span class="positive">+0</span>&nbsp;&nbsp;<span class="negative">−0</span></div>
-<div id="xauStatus" class="status">0 / 6 SELECTED</div>
-<div id="xauEligibility" class="eligibility">NOT ELIGIBLE</div>
-</div>
+
+<div id="xauScore" class="score">
+<span class="positive">+0</span>
+&nbsp;&nbsp;
+<span class="negative">−0</span>
 </div>
 
-<!-- XAG -->
+<div id="xauStatus" class="status">
+0 / 6 SELECTED
+</div>
+
+<div id="xauEligibility" class="eligibility">
+NOT ELIGIBLE
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ================= XAG ================= -->
+
 <div class="card">
+
 <div class="header">XAG</div>
 
-<div class="point"><div class="point-number">POINT 1</div><div class="point-name">W-POC formed upwards / downwards</div><div class="buttons">
+<div class="point">
+<div class="point-number">POINT 1</div>
+<div class="point-name">
+W-POC formed upwards / downwards
+</div>
+
+<div class="buttons">
 <button onclick="choose(this,'xag',0,1)">+1</button>
 <button onclick="choose(this,'xag',0,-1)">−1</button>
 <button onclick="choose(this,'xag',0,0)">0</button>
-</div></div>
+</div>
+</div>
 
-<div class="point"><div class="point-number">POINT 2</div><div class="point-name">Weekly VAH / VAL direction</div><div class="buttons">
+
+<div class="point">
+<div class="point-number">POINT 2</div>
+<div class="point-name">
+Weekly VAH / VAL direction
+</div>
+
+<div class="buttons">
 <button onclick="choose(this,'xag',1,1)">+1</button>
 <button onclick="choose(this,'xag',1,-1)">−1</button>
 <button onclick="choose(this,'xag',1,0)">0</button>
-</div></div>
+</div>
+</div>
 
-<div class="point"><div class="point-number">POINT 3</div><div class="point-name">D-POC formed up / down</div><div class="buttons">
+
+<div class="point">
+<div class="point-number">POINT 3</div>
+<div class="point-name">
+D-POC formed up / down
+</div>
+
+<div class="buttons">
 <button onclick="choose(this,'xag',2,1)">+1</button>
 <button onclick="choose(this,'xag',2,-1)">−1</button>
 <button onclick="choose(this,'xag',2,0)">0</button>
-</div></div>
+</div>
+</div>
 
-<div class="point"><div class="point-number">POINT 4</div><div class="point-name">15m CVD breaks last swing</div><div class="buttons">
+
+<div class="point">
+<div class="point-number">POINT 4</div>
+<div class="point-name">
+15m CVD breaks last swing
+</div>
+
+<div class="buttons">
 <button onclick="choose(this,'xag',3,1)">+1</button>
 <button onclick="choose(this,'xag',3,-1)">−1</button>
 <button onclick="choose(this,'xag',3,0)">0</button>
-</div></div>
+</div>
+</div>
 
-<div class="point"><div class="point-number">POINT 5</div><div class="point-name">Weekly + Daily VWAP direction</div><div class="buttons">
+
+<div class="point">
+<div class="point-number">POINT 5</div>
+<div class="point-name">
+Weekly + Daily VWAP direction
+</div>
+
+<div class="buttons">
 <button onclick="choose(this,'xag',4,1)">+1</button>
 <button onclick="choose(this,'xag',4,-1)">−1</button>
 <button onclick="choose(this,'xag',4,0)">0</button>
-</div></div>
+</div>
+</div>
 
-<div class="point"><div class="point-number">POINT 6</div><div class="point-name">Daily VAH / VAL direction</div><div class="buttons">
+
+<div class="point">
+<div class="point-number">POINT 6</div>
+<div class="point-name">
+Daily VAH / VAL direction
+</div>
+
+<div class="buttons">
 <button onclick="choose(this,'xag',5,1)">+1</button>
 <button onclick="choose(this,'xag',5,-1)">−1</button>
 <button onclick="choose(this,'xag',5,0)">0</button>
-</div></div>
+</div>
+</div>
+
 
 <div class="total">
-<div id="xagScore" class="score"><span class="positive">+0</span>&nbsp;&nbsp;<span class="negative">−0</span></div>
-<div id="xagStatus" class="status">0 / 6 SELECTED</div>
-<div id="xagEligibility" class="eligibility">NOT ELIGIBLE</div>
-</div>
-</div>
+
+<div id="xagScore" class="score">
+<span class="positive">+0</span>
+&nbsp;&nbsp;
+<span class="negative">−0</span>
 </div>
 
-<div id="result" class="result wait">Select your points.</div>
-<button class="reset" onclick="resetAll()">RESET</button>
-
-<!-- TRADE JOURNAL -->
-<div class="panel">
-<h2>📓 Trade Journal</h2>
-<div id="liveSnapshot" class="snapshot">
-Current: XAU +0 / −0 • XAG +0 / −0
+<div id="xagStatus" class="status">
+0 / 6 SELECTED
 </div>
 
-<div class="formgrid">
-<div class="field">
-<label>Trade Direction</label>
-<select id="tradeDirection">
-<option>Buy</option>
-<option>Sell</option>
-</select>
+<div id="xagEligibility" class="eligibility">
+NOT ELIGIBLE
 </div>
 
-<div class="field">
-<label>Entry Location</label>
-<select id="entryLocation">
-<option>Daily VWAP</option>
-<option>Daily VAH</option>
-<option>Daily VAL</option>
-<option>Weekly VAH</option>
-<option>Weekly VAL</option>
-<option>POC</option>
-<option>Other</option>
-</select>
 </div>
 
-<div class="field">
-<label>Liquidity Sweep</label>
-<select id="sweep">
-<option>Yes</option>
-<option>No</option>
-</select>
 </div>
 
-<div class="field">
-<label>Result</label>
-<select id="tradeResult">
-<option>Win</option>
-<option>Loss</option>
-<option>BE</option>
-</select>
 </div>
 
-<div class="field">
-<label>RR Achieved</label>
-<input id="rr" type="number" min="0" step="0.1" placeholder="e.g. 3">
+
+<!-- ================= DECISION ================= -->
+
+<div id="result" class="result wait">
+
+<div class="main">
+DON'T OVERTRADE
 </div>
 
-<div class="field">
-<label>Dominant Metal</label>
-<select id="dominant">
-<option>Auto</option>
-<option>XAU</option>
-<option>XAG</option>
-<option>Equal</option>
-</select>
+<div class="sub">
+NO CLEAR DIRECTION YET — WAIT FOR A ±4 SIGNAL
 </div>
 
-<div class="field full">
-<label>Notes</label>
-<textarea id="tradeNotes" placeholder="Optional trade notes..."></textarea>
-</div>
 </div>
 
-<button class="save" onclick="saveTrade()">💾 SAVE TRADE</button>
-</div>
 
-<!-- STATISTICS -->
-<div class="panel">
-<h2>📊 Statistics</h2>
-<div class="statsgrid">
-<div class="stat"><b id="sTotal">0</b><span>TOTAL TRADES</span></div>
-<div class="stat"><b id="sWins">0</b><span>WINS</span></div>
-<div class="stat"><b id="sLosses">0</b><span>LOSSES</span></div>
-<div class="stat"><b id="sBE">0</b><span>BREAK-EVEN</span></div>
-<div class="stat"><b id="sWinRate">0%</b><span>WIN RATE</span></div>
-<div class="stat"><b id="sAvgRR">0.00R</b><span>AVERAGE RR</span></div>
-<div class="stat"><b id="sNetR">0.00R</b><span>NET R</span></div>
-<div class="stat"><b id="sPF">0.00</b><span>PROFIT FACTOR</span></div>
-<div class="stat"><b id="sAvgWin">0.00R</b><span>AVG WIN</span></div>
-<div class="stat"><b id="sAvgLoss">0.00R</b><span>AVG LOSS</span></div>
-</div>
-</div>
+<button class="reset" onclick="resetAll()">
+RESET
+</button>
 
-<!-- SAVED TRADES -->
-<div class="panel">
-<h2>📋 Saved Trades</h2>
-<div id="tradeList"><div class="empty">No trades saved yet.</div></div>
-<button class="clearAll" onclick="clearTrades()">DELETE ALL JOURNAL DATA</button>
-</div>
 
 <script>
-let xau=[null,null,null,null,null,null];
-let xag=[null,null,null,null,null,null];
 
-const JOURNAL_KEY="xau_xag_strategy_journal_v1";
+/* =========================================================
+   PERSISTENT CALCULATOR DATA
+   ========================================================= */
+
+const STORAGE_KEY = "xau_xag_strategy_calculator_v2";
+
+let xau = [null,null,null,null,null,null];
+let xag = [null,null,null,null,null,null];
+
+/*
+    These timestamps remember when each metal most recently
+    reached an eligibility direction.
+
+    Example:
+    xauBull = time XAU reached +4
+    xauBear = time XAU reached -4
+    xagBull = time XAG reached +4
+    xagBear = time XAG reached -4
+*/
+
+let eligibilityTimes = {
+    xauBull: null,
+    xauBear: null,
+    xagBull: null,
+    xagBear: null
+};
+
+
+/* =========================================================
+   SAVE STATE
+   ========================================================= */
+
+function saveState(){
+
+    const state = {
+        xau: xau,
+        xag: xag,
+        eligibilityTimes: eligibilityTimes
+    };
+
+    try{
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(state)
+        );
+    }catch(e){
+        console.log("Could not save calculator state.");
+    }
+}
+
+
+/* =========================================================
+   LOAD STATE
+   ========================================================= */
+
+function loadState(){
+
+    try{
+
+        const saved =
+            JSON.parse(
+                localStorage.getItem(STORAGE_KEY)
+            );
+
+        if(!saved) return;
+
+        if(
+            Array.isArray(saved.xau) &&
+            saved.xau.length===6
+        ){
+            xau=saved.xau;
+        }
+
+        if(
+            Array.isArray(saved.xag) &&
+            saved.xag.length===6
+        ){
+            xag=saved.xag;
+        }
+
+        if(saved.eligibilityTimes){
+
+            eligibilityTimes={
+                ...eligibilityTimes,
+                ...saved.eligibilityTimes
+            };
+
+        }
+
+    }catch(e){
+
+        console.log("Could not load calculator state.");
+
+    }
+}
+
+
+/* =========================================================
+   BUTTON HIGHLIGHT
+   ========================================================= */
 
 function highlightButton(button,value){
-    button.classList.remove("selected","plus","minus","zero");
+
+    button.classList.remove(
+        "selected",
+        "plus",
+        "minus",
+        "zero"
+    );
+
     button.classList.add("selected");
 
     if(value===1){
+
         button.classList.add("plus");
-        button.style.backgroundColor="#baf0c8";
-        button.style.color="#075f27";
-        button.style.border="2px solid #08752f";
+
     }else if(value===-1){
+
         button.classList.add("minus");
-        button.style.backgroundColor="#ffc5c5";
-        button.style.color="#9d1111";
-        button.style.border="2px solid #c62828";
+
     }else{
+
         button.classList.add("zero");
-        button.style.backgroundColor="#cfcfcf";
-        button.style.color="#333";
-        button.style.border="2px solid #666";
+
     }
 }
 
+
+/* =========================================================
+   CLEAR BUTTON
+   ========================================================= */
+
 function clearButton(button){
-    button.classList.remove("selected","plus","minus","zero");
-    button.style.backgroundColor="";
-    button.style.color="";
-    button.style.border="";
+
+    button.classList.remove(
+        "selected",
+        "plus",
+        "minus",
+        "zero"
+    );
+
 }
 
+
+/* =========================================================
+   SELECT POINT
+   ========================================================= */
+
 function choose(button,metal,pointIndex,value){
-    let array=metal==="xau"?xau:xag;
+
+    let array =
+        metal==="xau"
+        ? xau
+        : xag;
+
     array[pointIndex]=value;
 
     let point=button.closest(".point");
-    point.querySelectorAll("button").forEach(clearButton);
+
+    point
+        .querySelectorAll("button")
+        .forEach(clearButton);
+
     highlightButton(button,value);
+
+    updateEligibilityTime(metal);
+
+    saveState();
+
     update();
 }
 
+
+/* =========================================================
+   CALCULATE SCORE
+   ========================================================= */
+
 function calculate(array){
-    let positive=0,negative=0,selected=0;
+
+    let positive=0;
+    let negative=0;
+    let selected=0;
 
     array.forEach(function(value){
-        if(value!==null) selected++;
-        if(value===1) positive++;
-        if(value===-1) negative++;
+
+        if(value!==null){
+            selected++;
+        }
+
+        if(value===1){
+            positive++;
+        }
+
+        if(value===-1){
+            negative++;
+        }
+
     });
 
-    return {positive,negative,selected};
+    return {
+        positive,
+        negative,
+        selected
+    };
 }
 
+
+/* =========================================================
+   DIRECTION
+   ========================================================= */
+
 function direction(data){
-    if(data.positive>=4) return 1;
-    if(data.negative>=4) return -1;
+
+    if(data.positive>=4){
+        return 1;
+    }
+
+    if(data.negative>=4){
+        return -1;
+    }
+
     return 0;
 }
 
+
+/* =========================================================
+   REMEMBER WHEN METAL BECAME ELIGIBLE
+   ========================================================= */
+
+function updateEligibilityTime(metal){
+
+    const data =
+        calculate(
+            metal==="xau"
+            ? xau
+            : xag
+        );
+
+    const now=Date.now();
+
+    if(metal==="xau"){
+
+        if(data.positive>=4){
+
+            if(eligibilityTimes.xauBull===null){
+                eligibilityTimes.xauBull=now;
+            }
+
+        }else{
+
+            eligibilityTimes.xauBull=null;
+
+        }
+
+
+        if(data.negative>=4){
+
+            if(eligibilityTimes.xauBear===null){
+                eligibilityTimes.xauBear=now;
+            }
+
+        }else{
+
+            eligibilityTimes.xauBear=null;
+
+        }
+
+    }else{
+
+        if(data.positive>=4){
+
+            if(eligibilityTimes.xagBull===null){
+                eligibilityTimes.xagBull=now;
+            }
+
+        }else{
+
+            eligibilityTimes.xagBull=null;
+
+        }
+
+
+        if(data.negative>=4){
+
+            if(eligibilityTimes.xagBear===null){
+                eligibilityTimes.xagBear=now;
+            }
+
+        }else{
+
+            eligibilityTimes.xagBear=null;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   DISPLAY METAL
+   ========================================================= */
+
 function displayMetal(metal,data){
-    let score=document.getElementById(metal+"Score");
-    let status=document.getElementById(metal+"Status");
-    let eligibility=document.getElementById(metal+"Eligibility");
+
+    let score=
+        document.getElementById(
+            metal+"Score"
+        );
+
+    let status=
+        document.getElementById(
+            metal+"Status"
+        );
+
+    let eligibility=
+        document.getElementById(
+            metal+"Eligibility"
+        );
 
     score.innerHTML=
-        '<span class="positive">+'+data.positive+
+        '<span class="positive">+'+
+        data.positive+
         '</span>&nbsp;&nbsp;<span class="negative">−'+
-        data.negative+'</span>';
+        data.negative+
+        '</span>';
 
-    status.innerHTML=data.selected+" / 6 SELECTED";
+    status.innerHTML=
+        data.selected+
+        " / 6 SELECTED";
 
     let dir=direction(data);
+
     eligibility.className="eligibility";
 
     if(dir===1){
-        eligibility.innerHTML="✓ BULLISH — ELIGIBLE";
+
+        eligibility.innerHTML=
+            "✓ BULLISH — ELIGIBLE";
+
         eligibility.classList.add("bull");
+
     }else if(dir===-1){
-        eligibility.innerHTML="✓ BEARISH — ELIGIBLE";
+
+        eligibility.innerHTML=
+            "✓ BEARISH — ELIGIBLE";
+
         eligibility.classList.add("bear");
+
     }else{
-        eligibility.innerHTML="NOT ELIGIBLE — NEED ±4";
+
+        eligibility.innerHTML=
+            "NOT ELIGIBLE — NEED ±4";
+
     }
+
 }
 
-function getDominant(A,B,xd,gd){
-    if(xd!==0 && gd===0) return "XAU";
-    if(gd!==0 && xd===0) return "XAG";
 
-    let xauStrength=A.positive-A.negative;
-    let xagStrength=B.positive-B.negative;
+/* =========================================================
+   FIND NEWEST ELIGIBLE DIRECTION
+   ========================================================= */
 
-    if(xagStrength>xauStrength) return "XAG";
-    if(xauStrength>xagStrength) return "XAU";
+function getNewestEligibleDirection(){
 
-    return "Equal";
+    let candidates=[];
+
+    if(
+        eligibilityTimes.xauBull!==null
+    ){
+
+        candidates.push({
+            metal:"XAU",
+            direction:1,
+            time:eligibilityTimes.xauBull
+        });
+
+    }
+
+    if(
+        eligibilityTimes.xauBear!==null
+    ){
+
+        candidates.push({
+            metal:"XAU",
+            direction:-1,
+            time:eligibilityTimes.xauBear
+        });
+
+    }
+
+    if(
+        eligibilityTimes.xagBull!==null
+    ){
+
+        candidates.push({
+            metal:"XAG",
+            direction:1,
+            time:eligibilityTimes.xagBull
+        });
+
+    }
+
+    if(
+        eligibilityTimes.xagBear!==null
+    ){
+
+        candidates.push({
+            metal:"XAG",
+            direction:-1,
+            time:eligibilityTimes.xagBear
+        });
+
+    }
+
+    if(candidates.length===0){
+        return null;
+    }
+
+    candidates.sort(function(a,b){
+        return b.time-a.time;
+    });
+
+    return candidates[0];
+
 }
 
-function getDecisionText(A,B){
+
+/* =========================================================
+   RESULT DECISION
+   ========================================================= */
+
+function updateResult(A,B){
+
+    let result=
+        document.getElementById("result");
+
     let xd=direction(A);
     let gd=direction(B);
 
-    if(xd!==0 && gd!==0 && xd!==gd)
-        return "XAU + XAG OPPOSITE — NO TRADE";
 
-    if(xd===1 && gd===1)
-        return "XAU + XAG BULLISH — TAKE ENTRY FROM NEAREST ENTRY POINT";
+    /* ================================================
+       BOTH BULLISH
+       ================================================ */
 
-    if(xd===-1 && gd===-1)
-        return "XAU + XAG BEARISH — TAKE ENTRY FROM NEAREST ENTRY POINT";
+    if(xd===1 && gd===1){
 
-    if(xd!==0 && gd===0)
-        return "XAU ELIGIBLE — XAG NOT YET ELIGIBLE";
+        /*
+            5+ on BOTH = strongest bullish condition
+        */
 
-    if(xd===0 && gd!==0)
-        return "XAG ELIGIBLE — XAU NOT YET ELIGIBLE";
+        if(
+            A.positive>=5 &&
+            B.positive>=5
+        ){
 
-    return "NO ELIGIBLE METAL YET";
+            result.className="result good";
+
+            result.innerHTML=`
+                <div class="main">
+                    XAU + XAG BULLISH
+                </div>
+
+                <div class="sub">
+                    TAKE ENTRY FROM THE NEAREST ENTRY POINT
+                </div>
+
+                <div class="small">
+                    Strong confirmation: both metals are at +5 or better.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        /*
+            Anything involving +4 confirmation
+            = D-VWAP entry
+        */
+
+        result.className="result good";
+
+        result.innerHTML=`
+            <div class="main">
+                XAU + XAG BULLISH
+            </div>
+
+            <div class="sub">
+                D-VWAP IS THE BEST ENTRY
+            </div>
+
+            <div class="small">
+                Wait for the D-VWAP entry rather than forcing a distant entry.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    /* ================================================
+       BOTH BEARISH
+       ================================================ */
+
+    if(xd===-1 && gd===-1){
+
+        /*
+            5- or lower on BOTH = strongest bearish condition
+        */
+
+        if(
+            A.negative>=5 &&
+            B.negative>=5
+        ){
+
+            result.className="result good";
+
+            result.innerHTML=`
+                <div class="main">
+                    XAU + XAG BEARISH
+                </div>
+
+                <div class="sub">
+                    TAKE ENTRY FROM THE NEAREST ENTRY POINT
+                </div>
+
+                <div class="small">
+                    Strong confirmation: both metals are at −5 or lower.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        /*
+            Anything involving −4 confirmation
+            = D-VWAP entry
+        */
+
+        result.className="result good";
+
+        result.innerHTML=`
+            <div class="main">
+                XAU + XAG BEARISH
+            </div>
+
+            <div class="sub">
+                D-VWAP IS THE BEST ENTRY
+            </div>
+
+            <div class="small">
+                Wait for the D-VWAP entry rather than forcing a distant entry.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    /* ================================================
+       BOTH ELIGIBLE BUT OPPOSITE
+       ================================================ */
+
+    if(
+        xd!==0 &&
+        gd!==0 &&
+        xd!==gd
+    ){
+
+        let newest=
+            getNewestEligibleDirection();
+
+        let newestText=
+            "Focus on the newest ±4 direction.";
+
+        if(newest){
+
+            newestText=
+                "Newest ±4 direction: "+
+                newest.metal+
+                " "+
+                (newest.direction===1
+                    ?"BULLISH"
+                    :"BEARISH"
+                )+".";
+
+        }
+
+        result.className="result bad";
+
+        result.innerHTML=`
+            <div class="main">
+                XAU + XAG OPPOSITE
+            </div>
+
+            <div class="sub">
+                NO TRADE
+            </div>
+
+            <div class="small">
+                IF YOU MUST TRADE: ${newestText}
+                XAG IS MORE DOMINANT.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    /* ================================================
+       XAU ELIGIBLE — XAG NOT
+       ================================================ */
+
+    if(
+        xd!==0 &&
+        gd===0
+    ){
+
+        result.className="result wait";
+
+        result.innerHTML=`
+            <div class="main">
+                PREFER GOLD D-VWAP FOR ENTRY
+            </div>
+
+            <div class="sub">
+                EXTRA-SAFE ENTRY FOR SILVER
+            </div>
+
+            <div class="small">
+                XAU is eligible while XAG has not reached ±4.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    /* ================================================
+       XAG ELIGIBLE — XAU NOT
+       ================================================ */
+
+    if(
+        xd===0 &&
+        gd!==0
+    ){
+
+        result.className="result wait";
+
+        result.innerHTML=`
+            <div class="main">
+                PREFER SILVER D-VWAP FOR ENTRY
+            </div>
+
+            <div class="sub">
+                EXTRA-SAFE ENTRY FOR GOLD
+            </div>
+
+            <div class="small">
+                XAG is eligible while XAU has not reached ±4.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    /* ================================================
+       NEITHER ELIGIBLE
+       ================================================ */
+
+    result.className="result wait";
+
+    result.innerHTML=`
+        <div class="main">
+            DON'T OVERTRADE
+        </div>
+
+        <div class="sub">
+            NO CLEAR DIRECTION YET — WAIT FOR A ±4 SIGNAL
+        </div>
+    `;
+
 }
 
+
+/* =========================================================
+   UPDATE EVERYTHING
+   ========================================================= */
+
 function update(){
+
     let A=calculate(xau);
     let B=calculate(xag);
 
     displayMetal("xau",A);
     displayMetal("xag",B);
 
-    let result=document.getElementById("result");
-    let xd=direction(A);
-    let gd=direction(B);
+    updateResult(A,B);
 
-    if(xd!==0 && gd!==0 && xd!==gd){
-        result.innerHTML="⛔ XAU + XAG OPPOSITE<br>NO TRADE";
-        result.className="result bad";
-    }else if(xd===1 && gd===1){
-        result.innerHTML="✅ XAU + XAG BULLISH<br>TAKE ENTRY FROM NEAREST ENTRY POINT";
-        result.className="result good";
-    }else if(xd===-1 && gd===-1){
-        result.innerHTML="✅ XAU + XAG BEARISH<br>TAKE ENTRY FROM NEAREST ENTRY POINT";
-        result.className="result good";
-    }else if(xd!==0 && gd===0){
-        result.innerHTML="XAU ✓ ELIGIBLE<br>XAG NOT YET ELIGIBLE — NEED ±4";
-        result.className="result wait";
-    }else if(xd===0 && gd!==0){
-        result.innerHTML="XAG ✓ ELIGIBLE<br>XAU NOT YET ELIGIBLE — NEED ±4";
-        result.className="result wait";
-    }else{
-        result.innerHTML="⏳ NO ELIGIBLE METAL YET<br>NEED +4 OR −4";
-        result.className="result wait";
-    }
-
-    document.getElementById("liveSnapshot").innerHTML=
-        "Current: <span class='positive'>XAU +"+A.positive+
-        "</span> <span class='negative'>/ −"+A.negative+
-        "</span> • <span class='positive'>XAG +"+B.positive+
-        "</span> <span class='negative'>/ −"+B.negative+"</span>";
 }
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
 
 function resetAll(){
-    xau=[null,null,null,null,null,null];
-    xag=[null,null,null,null,null,null];
 
-    document.querySelectorAll(".point button").forEach(function(button){
-        clearButton(button);
-    });
+    const confirmed=
+        confirm(
+            "Reset all XAU and XAG points?"
+        );
 
-    update();
-}
-
-function loadTrades(){
-    try{
-        return JSON.parse(localStorage.getItem(JOURNAL_KEY)||"[]");
-    }catch(e){
-        return [];
-    }
-}
-
-function saveTrades(trades){
-    localStorage.setItem(JOURNAL_KEY,JSON.stringify(trades));
-}
-
-function saveTrade(){
-    let A=calculate(xau);
-    let B=calculate(xag);
-
-    if(A.selected===0 && B.selected===0){
-        alert("Please select your strategy points before saving the trade.");
+    if(!confirmed){
         return;
     }
 
-    let xd=direction(A);
-    let gd=direction(B);
+    xau=[
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+    ];
 
-    let result=document.getElementById("tradeResult").value;
-    let rr=parseFloat(document.getElementById("rr").value);
+    xag=[
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+    ];
 
-    if(result!=="BE" && (!Number.isFinite(rr) || rr<=0)){
-        alert("Please enter the RR achieved. Example: 3 for 1:3.");
-        return;
-    }
-
-    if(result==="BE") rr=0;
-
-    let netR=result==="Win"?rr:result==="Loss"?-rr:0;
-
-    let selectedDominant=document.getElementById("dominant").value;
-    let autoDominant=getDominant(A,B,xd,gd);
-    let dominant=selectedDominant==="Auto"?autoDominant:selectedDominant;
-
-    let trade={
-        id:Date.now(),
-        date:new Date().toISOString(),
-
-        /* AUTOMATIC CALCULATOR SNAPSHOT */
-        xauPlus:A.positive,
-        xauMinus:A.negative,
-        xagPlus:B.positive,
-        xagMinus:B.negative,
-
-        xauDirection:xd,
-        xagDirection:gd,
-        decision:getDecisionText(A,B),
-        dominant:dominant,
-
-        /* MANUAL TRADE DATA */
-        direction:document.getElementById("tradeDirection").value,
-        entry:document.getElementById("entryLocation").value,
-        sweep:document.getElementById("sweep").value,
-        result:result,
-        rr:rr,
-        netR:netR,
-        notes:document.getElementById("tradeNotes").value.trim()
+    eligibilityTimes={
+        xauBull:null,
+        xauBear:null,
+        xagBull:null,
+        xagBear:null
     };
 
-    let trades=loadTrades();
-    trades.unshift(trade);
-    saveTrades(trades);
 
-    document.getElementById("rr").value="";
-    document.getElementById("tradeNotes").value="";
+    document
+        .querySelectorAll(".point button")
+        .forEach(function(button){
 
-    renderTrades();
+            clearButton(button);
 
-    alert("✅ Trade saved!\n\nXAU and XAG scores were automatically captured.");
+        });
+
+
+    saveState();
+
+    update();
+
 }
 
-function deleteTrade(id){
-    let trades=loadTrades().filter(function(trade){
-        return trade.id!==id;
+
+/* =========================================================
+   RESTORE BUTTON HIGHLIGHTS
+   ========================================================= */
+
+function restoreButtons(){
+
+    const metals=[
+        {
+            name:"xau",
+            values:xau
+        },
+        {
+            name:"xag",
+            values:xag
+        }
+    ];
+
+    metals.forEach(function(metal){
+
+        let card=
+            document
+            .querySelector(
+                metal.name==="xau"
+                ? ".card:nth-child(1)"
+                : ".card:nth-child(2)"
+            );
+
+        let points=
+            card.querySelectorAll(".point");
+
+        points.forEach(function(point,index){
+
+            let value=
+                metal.values[index];
+
+            if(value===null){
+                return;
+            }
+
+            let buttons=
+                point.querySelectorAll("button");
+
+            let buttonIndex;
+
+            if(value===1){
+                buttonIndex=0;
+            }else if(value===-1){
+                buttonIndex=1;
+            }else{
+                buttonIndex=2;
+            }
+
+            highlightButton(
+                buttons[buttonIndex],
+                value
+            );
+
+        });
+
     });
 
-    saveTrades(trades);
-    renderTrades();
 }
 
-function clearTrades(){
-    if(!confirm("Delete ALL saved journal trades? This cannot be undone.")) return;
 
-    localStorage.removeItem(JOURNAL_KEY);
-    renderTrades();
-}
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
 
-function formatDate(dateString){
-    return new Date(dateString).toLocaleString();
-}
+loadState();
 
-function escapeHTML(text){
-    return String(text).replace(/[&<>"']/g,function(c){
-        return {
-            "&":"&amp;",
-            "<":"&lt;",
-            ">":"&gt;",
-            '"':"&quot;",
-            "'":"&#039;"
-        }[c];
-    });
-}
-
-function renderTrades(){
-    let trades=loadTrades();
-    let list=document.getElementById("tradeList");
-
-    if(trades.length===0){
-        list.innerHTML='<div class="empty">No trades saved yet.</div>';
-    }else{
-        list.innerHTML=trades.map(function(t,index){
-            let resultClass=
-                t.result==="Win"?"win":
-                t.result==="Loss"?"loss":"be";
-
-            return `
-            <div class="trade">
-                <div class="tradehead">
-                    #${trades.length-index} • ${formatDate(t.date)}
-                    • <span class="${resultClass}">${escapeHTML(t.result)}</span>
-                </div>
-
-                XAU:
-                <span class="positive">+${t.xauPlus}</span>
-                <span class="negative">−${t.xauMinus}</span>
-                &nbsp;&nbsp;
-
-                XAG:
-                <span class="positive">+${t.xagPlus}</span>
-                <span class="negative">−${t.xagMinus}</span>
-
-                <br>
-
-                Decision: ${escapeHTML(t.decision)}
-                <br>
-
-                Dominant: ${escapeHTML(t.dominant)}
-                • Direction: ${escapeHTML(t.direction)}
-                <br>
-
-                Entry: ${escapeHTML(t.entry)}
-                • Sweep: ${escapeHTML(t.sweep)}
-                <br>
-
-                RR: ${Number(t.rr).toFixed(2)}R
-                • Net: ${Number(t.netR).toFixed(2)}R
-
-                ${t.notes?`<br>Notes: ${escapeHTML(t.notes)}`:""}
-
-                <br>
-                <button class="deleteBtn" onclick="deleteTrade(${t.id})">
-                    Delete
-                </button>
-            </div>`;
-        }).join("");
-    }
-
-    updateStatistics(trades);
-}
-
-function updateStatistics(trades){
-    let total=trades.length;
-
-    let wins=trades.filter(t=>t.result==="Win").length;
-    let losses=trades.filter(t=>t.result==="Loss").length;
-    let be=trades.filter(t=>t.result==="BE").length;
-
-    let winRate=total?(wins/total)*100:0;
-
-    let avgRR=total?
-        trades.reduce((sum,t)=>sum+Number(t.rr||0),0)/total:
-        0;
-
-    let netR=trades.reduce(
-        (sum,t)=>sum+Number(t.netR||0),
-        0
-    );
-
-    let grossProfit=trades
-        .filter(t=>t.result==="Win")
-        .reduce((sum,t)=>sum+Math.max(0,Number(t.netR||0)),0);
-
-    let grossLoss=Math.abs(
-        trades
-        .filter(t=>t.result==="Loss")
-        .reduce((sum,t)=>sum+Math.min(0,Number(t.netR||0)),0)
-    );
-
-    let profitFactor=
-        grossLoss>0?grossProfit/grossLoss:
-        grossProfit>0?Infinity:0;
-
-    let avgWin=wins?
-        trades.filter(t=>t.result==="Win")
-        .reduce((sum,t)=>sum+Number(t.rr||0),0)/wins:
-        0;
-
-    let avgLoss=losses?
-        trades.filter(t=>t.result==="Loss")
-        .reduce((sum,t)=>sum+Number(t.rr||0),0)/losses:
-        0;
-
-    document.getElementById("sTotal").textContent=total;
-    document.getElementById("sWins").textContent=wins;
-    document.getElementById("sLosses").textContent=losses;
-    document.getElementById("sBE").textContent=be;
-    document.getElementById("sWinRate").textContent=winRate.toFixed(1)+"%";
-    document.getElementById("sAvgRR").textContent=avgRR.toFixed(2)+"R";
-    document.getElementById("sNetR").textContent=netR.toFixed(2)+"R";
-    document.getElementById("sPF").textContent=
-        profitFactor===Infinity?"∞":profitFactor.toFixed(2);
-    document.getElementById("sAvgWin").textContent=avgWin.toFixed(2)+"R";
-    document.getElementById("sAvgLoss").textContent=avgLoss.toFixed(2)+"R";
-}
+restoreButtons();
 
 update();
-renderTrades();
+
 </script>
 
 </body>
