@@ -1096,6 +1096,76 @@ function updateResult(A,B){
 
 
     /* ================================================
+       NEW BEARISH CROSS-METAL D-VWAP RULE
+       ================================================
+
+       XAU −4 or worse + XAG −1 to −3:
+       ENTER XAG FROM D-VWAP
+       EXPECT XAU TO TURN BEARISH SLIGHTLY BEFORE D-VWAP
+
+       XAG −4 or worse + XAU −1 to −3:
+       ENTER XAU FROM D-VWAP
+       EXPECT XAG TO TURN BEARISH SLIGHTLY BEFORE D-VWAP
+
+       This rule is ONLY for bearish points.
+       Bullish logic remains unchanged.
+    */
+
+    if(
+        A.negative>=4 &&
+        B.negative>=1 &&
+        B.negative<=3
+    ){
+
+        result.className="result wait";
+
+        result.innerHTML=`
+            <div class="main">
+                ENTER XAG FROM D-VWAP
+            </div>
+
+            <div class="sub">
+                EXPECT XAU TO TURN BEARISH SLIGHTLY BEFORE D-VWAP
+            </div>
+
+            <div class="small">
+                XAU has stronger bearish confirmation while XAG is at −1 to −3.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    if(
+        B.negative>=4 &&
+        A.negative>=1 &&
+        A.negative<=3
+    ){
+
+        result.className="result wait";
+
+        result.innerHTML=`
+            <div class="main">
+                ENTER XAU FROM D-VWAP
+            </div>
+
+            <div class="sub">
+                EXPECT XAG TO TURN BEARISH SLIGHTLY BEFORE D-VWAP
+            </div>
+
+            <div class="small">
+                XAG has stronger bearish confirmation while XAU is at −1 to −3.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    /* ================================================
        BOTH ELIGIBLE BUT OPPOSITE
        ================================================ */
 
