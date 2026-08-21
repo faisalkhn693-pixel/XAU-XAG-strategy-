@@ -305,7 +305,6 @@ W-POC formed upwards / downwards
 </div>
 </div>
 
-
 <div class="point">
 <div class="point-number">POINT 2</div>
 <div class="point-name">
@@ -318,7 +317,6 @@ Weekly VAH / VAL direction
 <button onclick="choose(this,'xau',1,0)">0</button>
 </div>
 </div>
-
 
 <div class="point">
 <div class="point-number">POINT 3</div>
@@ -333,7 +331,6 @@ D-POC formed up / down
 </div>
 </div>
 
-
 <div class="point">
 <div class="point-number">POINT 4</div>
 <div class="point-name">
@@ -346,7 +343,6 @@ D-POC formed up / down
 <button onclick="choose(this,'xau',3,0)">0</button>
 </div>
 </div>
-
 
 <div class="point">
 <div class="point-number">POINT 5</div>
@@ -361,7 +357,6 @@ Weekly + Daily VWAP direction
 </div>
 </div>
 
-
 <div class="point">
 <div class="point-number">POINT 6</div>
 <div class="point-name">
@@ -374,7 +369,6 @@ Daily VAH / VAL direction
 <button onclick="choose(this,'xau',5,0)">0</button>
 </div>
 </div>
-
 
 <div class="total">
 
@@ -416,7 +410,6 @@ W-POC formed upwards / downwards
 </div>
 </div>
 
-
 <div class="point">
 <div class="point-number">POINT 2</div>
 <div class="point-name">
@@ -429,7 +422,6 @@ Weekly VAH / VAL direction
 <button onclick="choose(this,'xag',1,0)">0</button>
 </div>
 </div>
-
 
 <div class="point">
 <div class="point-number">POINT 3</div>
@@ -444,7 +436,6 @@ D-POC formed up / down
 </div>
 </div>
 
-
 <div class="point">
 <div class="point-number">POINT 4</div>
 <div class="point-name">
@@ -457,7 +448,6 @@ D-POC formed up / down
 <button onclick="choose(this,'xag',3,0)">0</button>
 </div>
 </div>
-
 
 <div class="point">
 <div class="point-number">POINT 5</div>
@@ -472,7 +462,6 @@ Weekly + Daily VWAP direction
 </div>
 </div>
 
-
 <div class="point">
 <div class="point-number">POINT 6</div>
 <div class="point-name">
@@ -485,7 +474,6 @@ Daily VAH / VAL direction
 <button onclick="choose(this,'xag',5,0)">0</button>
 </div>
 </div>
-
 
 <div class="total">
 
@@ -540,17 +528,6 @@ const STORAGE_KEY = "xau_xag_strategy_calculator_v2";
 
 let xau = [null,null,null,null,null,null];
 let xag = [null,null,null,null,null,null];
-
-/*
-    These timestamps remember when each metal most recently
-    reached an eligibility direction.
-
-    Example:
-    xauBull = time XAU reached +4
-    xauBear = time XAU reached -4
-    xagBull = time XAG reached +4
-    xagBear = time XAG reached -4
-*/
 
 let eligibilityTimes = {
     xauBull: null,
@@ -980,12 +957,23 @@ function updateResult(A,B){
     if(xd===1 && gd===1){
 
         /*
-            5+ on BOTH = strongest bullish condition
+            NEW RULE:
+
+            One metal must have +5 or better
+            and the other must have +4 or better.
+
+            +4/+4 DOES NOT qualify.
         */
 
         if(
-            A.positive>=5 &&
-            B.positive>=5
+            (
+                A.positive>=5 &&
+                B.positive>=4
+            ) ||
+            (
+                A.positive>=4 &&
+                B.positive>=5
+            )
         ){
 
             result.className="result good";
@@ -996,11 +984,11 @@ function updateResult(A,B){
                 </div>
 
                 <div class="sub">
-                    TAKE ENTRY FROM THE NEAREST ENTRY POINT
+                    ENTER ON REJECTION FROM ANY NEAREST VALID POINT
                 </div>
 
                 <div class="small">
-                    Strong confirmation: both metals are at +5 or better.
+                    Target 1:2
                 </div>
             `;
 
@@ -1009,7 +997,7 @@ function updateResult(A,B){
 
 
         /*
-            Anything involving +4 confirmation
+            +4/+4 ONLY
             = D-VWAP entry
         */
 
@@ -1025,7 +1013,7 @@ function updateResult(A,B){
             </div>
 
             <div class="small">
-                Wait for the D-VWAP entry rather than forcing a distant entry.
+                Target 1:2
             </div>
         `;
 
@@ -1041,12 +1029,23 @@ function updateResult(A,B){
     if(xd===-1 && gd===-1){
 
         /*
-            5- or lower on BOTH = strongest bearish condition
+            NEW RULE:
+
+            One metal must have −5 or lower
+            and the other must have −4 or lower.
+
+            −4/−4 DOES NOT qualify.
         */
 
         if(
-            A.negative>=5 &&
-            B.negative>=5
+            (
+                A.negative>=5 &&
+                B.negative>=4
+            ) ||
+            (
+                A.negative>=4 &&
+                B.negative>=5
+            )
         ){
 
             result.className="result good";
@@ -1057,11 +1056,11 @@ function updateResult(A,B){
                 </div>
 
                 <div class="sub">
-                    TAKE ENTRY FROM THE NEAREST ENTRY POINT
+                    ENTER ON REJECTION FROM ANY NEAREST VALID POINT
                 </div>
 
                 <div class="small">
-                    Strong confirmation: both metals are at −5 or lower.
+                    Target 1:2
                 </div>
             `;
 
@@ -1070,7 +1069,7 @@ function updateResult(A,B){
 
 
         /*
-            Anything involving −4 confirmation
+            −4/−4 ONLY
             = D-VWAP entry
         */
 
@@ -1086,7 +1085,7 @@ function updateResult(A,B){
             </div>
 
             <div class="small">
-                Wait for the D-VWAP entry rather than forcing a distant entry.
+                Target 1:2
             </div>
         `;
 
@@ -1096,20 +1095,8 @@ function updateResult(A,B){
 
 
     /* ================================================
-       NEW BEARISH CROSS-METAL D-VWAP RULE
-       ================================================
-
-       XAU −4 or worse + XAG −1 to −3:
-       ENTER XAG FROM D-VWAP
-       EXPECT XAU TO TURN BEARISH SLIGHTLY BEFORE D-VWAP
-
-       XAG −4 or worse + XAU −1 to −3:
-       ENTER XAU FROM D-VWAP
-       EXPECT XAG TO TURN BEARISH SLIGHTLY BEFORE D-VWAP
-
-       This rule is ONLY for bearish points.
-       Bullish logic remains unchanged.
-    */
+       BEARISH CROSS-METAL D-VWAP RULE
+       ================================================ */
 
     if(
         A.negative>=4 &&
@@ -1129,7 +1116,7 @@ function updateResult(A,B){
             </div>
 
             <div class="small">
-                XAU has stronger bearish confirmation while XAG is at −1 to −3.
+                XAU has stronger bearish confirmation while XAG is at −1 to −3. Target 1:2
             </div>
         `;
 
@@ -1156,7 +1143,7 @@ function updateResult(A,B){
             </div>
 
             <div class="small">
-                XAG has stronger bearish confirmation while XAU is at −1 to −3.
+                XAG has stronger bearish confirmation while XAU is at −1 to −3. Target 1:2
             </div>
         `;
 
@@ -1237,7 +1224,7 @@ function updateResult(A,B){
             </div>
 
             <div class="small">
-                XAU is eligible while XAG has not reached ±4.
+                XAU is eligible while XAG has not reached ±4. Target 1:2
             </div>
         `;
 
@@ -1267,7 +1254,7 @@ function updateResult(A,B){
             </div>
 
             <div class="small">
-                XAG is eligible while XAU has not reached ±4.
+                XAG is eligible while XAU has not reached ±4. Target 1:2
             </div>
         `;
 
