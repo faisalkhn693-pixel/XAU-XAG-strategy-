@@ -550,12 +550,16 @@ function saveState(){
     };
 
     try{
+
         localStorage.setItem(
             STORAGE_KEY,
             JSON.stringify(state)
         );
+
     }catch(e){
+
         console.log("Could not save calculator state.");
+
     }
 }
 
@@ -579,14 +583,18 @@ function loadState(){
             Array.isArray(saved.xau) &&
             saved.xau.length===6
         ){
+
             xau=saved.xau;
+
         }
 
         if(
             Array.isArray(saved.xag) &&
             saved.xag.length===6
         ){
+
             xag=saved.xag;
+
         }
 
         if(saved.eligibilityTimes){
@@ -634,6 +642,7 @@ function highlightButton(button,value){
         button.classList.add("zero");
 
     }
+
 }
 
 
@@ -679,6 +688,7 @@ function choose(button,metal,pointIndex,value){
     saveState();
 
     update();
+
 }
 
 
@@ -713,6 +723,7 @@ function calculate(array){
         negative,
         selected
     };
+
 }
 
 
@@ -731,6 +742,7 @@ function direction(data){
     }
 
     return 0;
+
 }
 
 
@@ -938,6 +950,89 @@ function getNewestEligibleDirection(){
 
 
 /* =========================================================
+   NEW ADDITION:
+   REJECTION ENTRY RULE
+   =========================================================
+
+   This rule ONLY activates when:
+
+   Bullish:
+   One metal = +5 or +6
+   AND
+   Other metal = +4, +5 or +6
+
+   Bearish:
+   One metal = -5 or -6
+   AND
+   Other metal = -4, -5 or -6
+
+   IMPORTANT:
+   +4 / +4 does NOT qualify.
+   -4 / -4 does NOT qualify.
+   Opposite directions do NOT qualify.
+
+   Entry:
+   ENTER ON REJECTION FROM ANY NEAREST VALID POINT
+
+   Target:
+   1:2
+*/
+
+function hasRejectionSetup(A,B){
+
+    /* BULLISH */
+
+    const bullishA =
+        A.positive>=5 &&
+        A.positive<=6 &&
+        B.positive>=4;
+
+    const bullishB =
+        B.positive>=5 &&
+        B.positive<=6 &&
+        A.positive>=4;
+
+    if(bullishA || bullishB){
+
+        return {
+            direction:1,
+            valid:true
+        };
+
+    }
+
+
+    /* BEARISH */
+
+    const bearishA =
+        A.negative>=5 &&
+        A.negative<=6 &&
+        B.negative>=4;
+
+    const bearishB =
+        B.negative>=5 &&
+        B.negative<=6 &&
+        A.negative>=4;
+
+    if(bearishA || bearishB){
+
+        return {
+            direction:-1,
+            valid:true
+        };
+
+    }
+
+
+    return {
+        direction:0,
+        valid:false
+    };
+
+}
+
+
+/* =========================================================
    RESULT DECISION
    ========================================================= */
 
@@ -951,54 +1046,49 @@ function updateResult(A,B){
 
 
     /* ================================================
+       NEW REJECTION ENTRY RULE
+       ================================================ */
+
+    let rejectionSetup=
+        hasRejectionSetup(A,B);
+
+    if(
+        rejectionSetup.valid &&
+        xd===rejectionSetup.direction &&
+        gd===rejectionSetup.direction
+    ){
+
+        result.className="result good";
+
+        result.innerHTML=`
+            <div class="main">
+                XAU + XAG ${rejectionSetup.direction===1 ? "BULLISH" : "BEARISH"}
+            </div>
+
+            <div class="sub">
+                ENTER ON REJECTION FROM ANY NEAREST VALID POINT
+            </div>
+
+            <div class="small">
+                Strong confirmation: one metal has ±5 or better and the other has at least ±4.
+                &nbsp;•&nbsp; TARGET 1:2
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    /* ================================================
        BOTH BULLISH
        ================================================ */
 
     if(xd===1 && gd===1){
 
         /*
-            NEW RULE:
-
-            One metal must have +5 or better
-            and the other must have +4 or better.
-
-            +4/+4 DOES NOT qualify.
-        */
-
-        if(
-            (
-                A.positive>=5 &&
-                B.positive>=4
-            ) ||
-            (
-                A.positive>=4 &&
-                B.positive>=5
-            )
-        ){
-
-            result.className="result good";
-
-            result.innerHTML=`
-                <div class="main">
-                    XAU + XAG BULLISH
-                </div>
-
-                <div class="sub">
-                    ENTER ON REJECTION FROM ANY NEAREST VALID POINT
-                </div>
-
-                <div class="small">
-                    Target 1:2
-                </div>
-            `;
-
-            return;
-        }
-
-
-        /*
-            +4/+4 ONLY
-            = D-VWAP entry
+            Normal bullish eligible setup
+            Target remains 1:3
         */
 
         result.className="result good";
@@ -1013,7 +1103,8 @@ function updateResult(A,B){
             </div>
 
             <div class="small">
-                Target 1:2
+                Wait for the D-VWAP entry rather than forcing a distant entry.
+                &nbsp;•&nbsp; TARGET 1:3
             </div>
         `;
 
@@ -1029,48 +1120,8 @@ function updateResult(A,B){
     if(xd===-1 && gd===-1){
 
         /*
-            NEW RULE:
-
-            One metal must have −5 or lower
-            and the other must have −4 or lower.
-
-            −4/−4 DOES NOT qualify.
-        */
-
-        if(
-            (
-                A.negative>=5 &&
-                B.negative>=4
-            ) ||
-            (
-                A.negative>=4 &&
-                B.negative>=5
-            )
-        ){
-
-            result.className="result good";
-
-            result.innerHTML=`
-                <div class="main">
-                    XAU + XAG BEARISH
-                </div>
-
-                <div class="sub">
-                    ENTER ON REJECTION FROM ANY NEAREST VALID POINT
-                </div>
-
-                <div class="small">
-                    Target 1:2
-                </div>
-            `;
-
-            return;
-        }
-
-
-        /*
-            −4/−4 ONLY
-            = D-VWAP entry
+            Normal bearish eligible setup
+            Target remains 1:3
         */
 
         result.className="result good";
@@ -1085,7 +1136,8 @@ function updateResult(A,B){
             </div>
 
             <div class="small">
-                Target 1:2
+                Wait for the D-VWAP entry rather than forcing a distant entry.
+                &nbsp;•&nbsp; TARGET 1:3
             </div>
         `;
 
@@ -1116,7 +1168,8 @@ function updateResult(A,B){
             </div>
 
             <div class="small">
-                XAU has stronger bearish confirmation while XAG is at −1 to −3. Target 1:2
+                XAU has stronger bearish confirmation while XAG is at −1 to −3.
+                &nbsp;•&nbsp; TARGET 1:3
             </div>
         `;
 
@@ -1143,7 +1196,8 @@ function updateResult(A,B){
             </div>
 
             <div class="small">
-                XAG has stronger bearish confirmation while XAU is at −1 to −3. Target 1:2
+                XAG has stronger bearish confirmation while XAU is at −1 to −3.
+                &nbsp;•&nbsp; TARGET 1:3
             </div>
         `;
 
@@ -1224,7 +1278,8 @@ function updateResult(A,B){
             </div>
 
             <div class="small">
-                XAU is eligible while XAG has not reached ±4. Target 1:2
+                XAU is eligible while XAG has not reached ±4.
+                &nbsp;•&nbsp; TARGET 1:3
             </div>
         `;
 
@@ -1254,7 +1309,8 @@ function updateResult(A,B){
             </div>
 
             <div class="small">
-                XAG is eligible while XAU has not reached ±4. Target 1:2
+                XAG is eligible while XAU has not reached ±4.
+                &nbsp;•&nbsp; TARGET 1:3
             </div>
         `;
 
