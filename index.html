@@ -590,7 +590,7 @@ NO CLEAR DIRECTION YET — WAIT FOR A ±4 SIGNAL
 </div>
 
 
-<button class="reset" onclick="resetAll()">
+<button class="reset" onclick="resetAll">
 RESET
 </button>
 
@@ -638,6 +638,7 @@ function saveState(){
         console.log("Could not save calculator state.");
 
     }
+
 }
 
 
@@ -688,6 +689,7 @@ function loadState(){
         console.log("Could not load calculator state.");
 
     }
+
 }
 
 
@@ -965,9 +967,7 @@ function getNewestEligibleDirection(){
 
     let candidates=[];
 
-    if(
-        eligibilityTimes.xauBull!==null
-    ){
+    if(eligibilityTimes.xauBull!==null){
 
         candidates.push({
             metal:"XAU",
@@ -977,9 +977,7 @@ function getNewestEligibleDirection(){
 
     }
 
-    if(
-        eligibilityTimes.xauBear!==null
-    ){
+    if(eligibilityTimes.xauBear!==null){
 
         candidates.push({
             metal:"XAU",
@@ -989,9 +987,7 @@ function getNewestEligibleDirection(){
 
     }
 
-    if(
-        eligibilityTimes.xagBull!==null
-    ){
+    if(eligibilityTimes.xagBull!==null){
 
         candidates.push({
             metal:"XAG",
@@ -1001,9 +997,7 @@ function getNewestEligibleDirection(){
 
     }
 
-    if(
-        eligibilityTimes.xagBear!==null
-    ){
+    if(eligibilityTimes.xagBear!==null){
 
         candidates.push({
             metal:"XAG",
@@ -1039,13 +1033,6 @@ function getNewestEligibleDirection(){
    One metal = -5 or -6
    AND
    Other metal = -4 or lower
-
-   +4 / +4 does NOT qualify.
-   -4 / -4 does NOT qualify.
-   Opposite directions do NOT qualify.
-
-   Entry:
-   ENTER ON REJECTION FROM ANY NEAREST VALID POINT
 */
 
 function hasRejectionSetup(A,B){
@@ -1106,61 +1093,79 @@ function hasRejectionSetup(A,B){
    OPPOSITE RULE
    =========================================================
 
-   Compare XAU and XAG point-by-point.
+   OPPOSITE starts at 3 points.
 
-   XAU +1 vs XAG -1 = OPPOSITE
-   XAU -1 vs XAG +1 = OPPOSITE
+   If one pair has 3 or more BULLISH points
+   AND the other pair has 3 or more BEARISH points:
 
-   0 does NOT count.
+       → OPPOSITE
 
-   If 3 OR MORE points are opposite:
-   → XAU + XAG OPPOSITE
-   → NO TRADE
+   OR
 
-   This is based on the actual 6 individual points,
-   NOT the total positive/negative scores.
+   If one pair has 3 or more BEARISH points
+   AND the other pair has 3 or more BULLISH points:
+
+       → OPPOSITE
+
+   Examples:
+
+   +3 / -3  → OPPOSITE
+   +3 / -4  → OPPOSITE
+   +4 / -3  → OPPOSITE
+   +4 / -4  → OPPOSITE
+   +5 / -4  → OPPOSITE
+   +6 / -3  → OPPOSITE
+
+   Example:
+
+   XAU = +4 / -2
+   XAG = +2 / -4
+
+   → OPPOSITE
+
+   Anything below 3 does not qualify.
 */
 
-function countOppositePoints(){
+function hasOppositeSetup(A,B){
 
-    let oppositeCount=0;
+    const AHasBullish3 =
+        A.positive >= 3;
 
-    for(let i=0;i<6;i++){
+    const AHasBearish3 =
+        A.negative >= 3;
 
-        if(
-            (xau[i]===1 && xag[i]===-1) ||
-            (xau[i]===-1 && xag[i]===1)
-        ){
+    const BHasBullish3 =
+        B.positive >= 3;
 
-            oppositeCount++;
-
-        }
-
-    }
-
-    return oppositeCount;
-
-}
+    const BHasBearish3 =
+        B.negative >= 3;
 
 
-function hasOppositeSetup(){
+    /* XAU bullish + XAG bearish */
 
-    const oppositeCount=
-        countOppositePoints();
+    if(
+        AHasBullish3 &&
+        BHasBearish3
+    ){
 
-    if(oppositeCount>=3){
-
-        return {
-            valid:true,
-            count:oppositeCount
-        };
+        return true;
 
     }
 
-    return {
-        valid:false,
-        count:oppositeCount
-    };
+
+    /* XAU bearish + XAG bullish */
+
+    if(
+        AHasBearish3 &&
+        BHasBullish3
+    ){
+
+        return true;
+
+    }
+
+
+    return false;
 
 }
 
@@ -1179,16 +1184,28 @@ function updateResult(A,B){
 
 
     /* ================================================
-       OPPOSITE RULE
-       CHECKED FIRST
+       OPPOSITE RULE — HIGHEST PRIORITY
+       ================================================
 
-       3 OR MORE ACTUAL OPPOSITE POINTS
-       ================================================ */
+       IMPORTANT:
+
+       This MUST be checked before all other
+       cross-metal entry rules.
+
+       Therefore:
+
+       +4/-2 vs +2/-4
+       +5/-1 vs +2/-4
+       +3/0 vs 0/-3
+
+       etc. will correctly show OPPOSITE
+       whenever there are 3+ opposing points.
+    */
 
     let oppositeSetup=
-        hasOppositeSetup();
+        hasOppositeSetup(A,B);
 
-    if(oppositeSetup.valid){
+    if(oppositeSetup){
 
         let newest=
             getNewestEligibleDirection();
@@ -1202,7 +1219,8 @@ function updateResult(A,B){
                 "Newest ±4 direction: "+
                 newest.metal+
                 " "+
-                (newest.direction===1
+                (
+                    newest.direction===1
                     ?"BULLISH"
                     :"BEARISH"
                 )+".";
@@ -1220,7 +1238,7 @@ function updateResult(A,B){
             </div>
 
             <div class="small">
-                ${oppositeSetup.count} OPPOSITE POINTS DETECTED.
+                3 OR MORE OPPOSITE POINTS DETECTED.
                 ${newestText}
                 XAG IS MORE DOMINANT.
             </div>
