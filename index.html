@@ -1103,78 +1103,63 @@ function hasRejectionSetup(A,B){
 
 
 /* =========================================================
-   NEW OPPOSITE RULE
+   OPPOSITE RULE
    =========================================================
 
-   Opposite highlight starts from ±3.
+   Compare XAU and XAG point-by-point.
 
-   Valid examples:
+   XAU +1 vs XAG -1 = OPPOSITE
+   XAU -1 vs XAG +1 = OPPOSITE
 
-   -3 / +3
-   -3 / +4
-   -4 / +3
-   +3 / -3
-   +3 / -4
-   +4 / -3
+   0 does NOT count.
 
-   Anything below ±3 does NOT qualify.
+   If 3 OR MORE points are opposite:
+   → XAU + XAG OPPOSITE
+   → NO TRADE
 
-   Examples that do NOT qualify:
-
-   -2 / +3
-   -2 / +4
-   +2 / -3
-   +2 / -4
+   This is based on the actual 6 individual points,
+   NOT the total positive/negative scores.
 */
 
-function hasOppositeSetup(A,B){
+function countOppositePoints(){
 
-    const APositive =
-        A.positive>=3;
+    let oppositeCount=0;
 
-    const ANegative =
-        A.negative>=3;
+    for(let i=0;i<6;i++){
 
-    const BPositive =
-        B.positive>=3;
+        if(
+            (xau[i]===1 && xag[i]===-1) ||
+            (xau[i]===-1 && xag[i]===1)
+        ){
 
-    const BNegative =
-        B.negative>=3;
+            oppositeCount++;
 
-
-    /* A bearish and B bullish */
-
-    if(
-        ANegative &&
-        BPositive
-    ){
-
-        return {
-            direction:"OPPOSITE",
-            valid:true
-        };
+        }
 
     }
 
+    return oppositeCount;
 
-    /* A bullish and B bearish */
+}
 
-    if(
-        APositive &&
-        BNegative
-    ){
+
+function hasOppositeSetup(){
+
+    const oppositeCount=
+        countOppositePoints();
+
+    if(oppositeCount>=3){
 
         return {
-            direction:"OPPOSITE",
-            valid:true
+            valid:true,
+            count:oppositeCount
         };
 
     }
-
 
     return {
-        direction:0,
-        valid:false
+        valid:false,
+        count:oppositeCount
     };
 
 }
@@ -1191,6 +1176,59 @@ function updateResult(A,B){
 
     let xd=direction(A);
     let gd=direction(B);
+
+
+    /* ================================================
+       OPPOSITE RULE
+       CHECKED FIRST
+
+       3 OR MORE ACTUAL OPPOSITE POINTS
+       ================================================ */
+
+    let oppositeSetup=
+        hasOppositeSetup();
+
+    if(oppositeSetup.valid){
+
+        let newest=
+            getNewestEligibleDirection();
+
+        let newestText=
+            "No ±4 direction has been established yet.";
+
+        if(newest){
+
+            newestText=
+                "Newest ±4 direction: "+
+                newest.metal+
+                " "+
+                (newest.direction===1
+                    ?"BULLISH"
+                    :"BEARISH"
+                )+".";
+        }
+
+        result.className="result bad";
+
+        result.innerHTML=`
+            <div class="main">
+                XAU + XAG OPPOSITE
+            </div>
+
+            <div class="sub">
+                NO TRADE
+            </div>
+
+            <div class="small">
+                ${oppositeSetup.count} OPPOSITE POINTS DETECTED.
+                ${newestText}
+                XAG IS MORE DOMINANT.
+            </div>
+        `;
+
+        return;
+
+    }
 
 
     /* ================================================
@@ -1331,56 +1369,6 @@ function updateResult(A,B){
 
             <div class="small">
                 XAG has stronger bearish confirmation while XAU is at −1 to −3.
-            </div>
-        `;
-
-        return;
-
-    }
-
-
-    /* ================================================
-       OPPOSITE FROM ±3
-       ================================================ */
-
-    let oppositeSetup=
-        hasOppositeSetup(A,B);
-
-    if(oppositeSetup.valid){
-
-        let newest=
-            getNewestEligibleDirection();
-
-        let newestText=
-            "No ±4 direction has been established yet.";
-
-        if(newest){
-
-            newestText=
-                "Newest ±4 direction: "+
-                newest.metal+
-                " "+
-                (newest.direction===1
-                    ?"BULLISH"
-                    :"BEARISH"
-                )+".";
-        }
-
-        result.className="result bad";
-
-        result.innerHTML=`
-            <div class="main">
-                XAU + XAG OPPOSITE
-            </div>
-
-            <div class="sub">
-                NO TRADE
-            </div>
-
-            <div class="small">
-                Opposite direction detected from ±3.
-                ${newestText}
-                XAG IS MORE DOMINANT.
             </div>
         `;
 
