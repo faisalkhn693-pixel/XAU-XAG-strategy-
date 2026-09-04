@@ -252,6 +252,157 @@ button.selected.zero{
     opacity:.85;
 }
 
+
+/* =========================================================
+   LEARNING SYSTEM
+   ========================================================= */
+
+.learning{
+    margin-top:10px;
+    background:#fff;
+    border-radius:12px;
+    padding:10px 9px;
+    box-shadow:0 2px 9px rgba(0,0,0,.10);
+    border:1px solid #ddd;
+}
+
+.learning-title{
+    text-align:center;
+    font-size:13px;
+    font-weight:950;
+    margin-bottom:4px;
+}
+
+.learning-subtitle{
+    text-align:center;
+    color:#666;
+    font-size:9px;
+    font-weight:800;
+    line-height:1.35;
+    margin-bottom:8px;
+}
+
+.learning-current{
+    background:#f1f1f1;
+    border-radius:9px;
+    padding:8px;
+    text-align:center;
+    font-size:10px;
+    font-weight:900;
+    line-height:1.5;
+}
+
+.learning-buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:5px;
+    margin-top:7px;
+}
+
+.learning-buttons button{
+    padding:9px 3px;
+    font-size:10px;
+}
+
+.record{
+    background:#e3edf8;
+    color:#244b70;
+    border-color:#b5cbe0;
+}
+
+.win{
+    background:#d9f5df;
+    color:#145c2c;
+    border-color:#a7dcb2;
+}
+
+.loss{
+    background:#ffdede;
+    color:#9d1717;
+    border-color:#e7aaaa;
+}
+
+.learning-stats{
+    margin-top:8px;
+    background:#f7f7f7;
+    border-radius:9px;
+    padding:8px;
+    font-size:9px;
+    font-weight:850;
+    line-height:1.55;
+}
+
+.stat-row{
+    display:flex;
+    justify-content:space-between;
+    border-bottom:1px solid #ddd;
+    padding:3px 0;
+}
+
+.stat-row:last-child{
+    border-bottom:none;
+}
+
+.learning-history{
+    margin-top:8px;
+    max-height:250px;
+    overflow-y:auto;
+}
+
+.history-item{
+    background:#f8f8f8;
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:7px;
+    margin-bottom:5px;
+    font-size:8.5px;
+    font-weight:800;
+    line-height:1.45;
+}
+
+.history-win{
+    border-left:4px solid #08752f;
+}
+
+.history-loss{
+    border-left:4px solid #c62828;
+}
+
+.history-pending{
+    border-left:4px solid #d59b00;
+}
+
+.history-buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:4px;
+    margin-top:5px;
+}
+
+.history-buttons button{
+    padding:5px;
+    font-size:8px;
+}
+
+.delete-history{
+    background:#eee;
+    color:#555;
+}
+
+.clear-history{
+    display:block;
+    margin:8px auto 0;
+    padding:7px 15px;
+    font-size:9px;
+    background:#fff;
+    border:1px solid #bbb;
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
 .reset{
     display:block;
     margin:10px auto;
@@ -590,7 +741,62 @@ NO CLEAR DIRECTION YET — WAIT FOR A ±4 SIGNAL
 </div>
 
 
-<button class="reset" onclick="resetAll">
+<!-- ================= LEARNING SYSTEM ================= -->
+
+<div class="learning">
+
+<div class="learning-title">
+SETUP LEARNING SYSTEM
+</div>
+
+<div class="learning-subtitle">
+This does NOT change your strategy. It records exactly what setup you traded
+and learns which setup patterns actually produce results.
+</div>
+
+<div id="learningCurrent" class="learning-current">
+NO SETUP RECORDED
+</div>
+
+<div class="learning-buttons">
+
+<button class="record" onclick="recordCurrentSetup()">
+RECORD CURRENT SETUP
+</button>
+
+<button onclick="cancelPendingSetup()">
+CANCEL
+</button>
+
+</div>
+
+<div id="outcomeButtons" class="learning-buttons" style="display:none;">
+
+<button class="win" onclick="finishPendingSetup('WIN')">
+✓ WIN — 1:3
+</button>
+
+<button class="loss" onclick="finishPendingSetup('LOSS')">
+✕ LOSS — 1R
+</button>
+
+</div>
+
+<div id="learningStats" class="learning-stats">
+No completed trades recorded yet.
+</div>
+
+<div id="learningHistory" class="learning-history">
+</div>
+
+<button class="clear-history" onclick="clearLearningHistory()">
+CLEAR LEARNING DATA
+</button>
+
+</div>
+
+
+<button class="reset" onclick="resetAll()">
 RESET
 </button>
 
@@ -602,6 +808,7 @@ RESET
    ========================================================= */
 
 const STORAGE_KEY = "xau_xag_strategy_calculator_v2";
+const LEARNING_KEY = "xau_xag_strategy_learning_v1";
 
 let xau = [null,null,null,null,null,null];
 let xag = [null,null,null,null,null,null];
@@ -615,7 +822,16 @@ let eligibilityTimes = {
 
 
 /* =========================================================
-   SAVE STATE
+   LEARNING DATA
+   ========================================================= */
+
+let learningHistory = [];
+
+let pendingSetup = null;
+
+
+/* =========================================================
+   SAVE CALCULATOR STATE
    ========================================================= */
 
 function saveState(){
@@ -643,7 +859,7 @@ function saveState(){
 
 
 /* =========================================================
-   LOAD STATE
+   LOAD CALCULATOR STATE
    ========================================================= */
 
 function loadState(){
@@ -687,6 +903,56 @@ function loadState(){
     }catch(e){
 
         console.log("Could not load calculator state.");
+
+    }
+
+}
+
+
+/* =========================================================
+   SAVE LEARNING DATA
+   ========================================================= */
+
+function saveLearning(){
+
+    try{
+
+        localStorage.setItem(
+            LEARNING_KEY,
+            JSON.stringify(learningHistory)
+        );
+
+    }catch(e){
+
+        console.log("Could not save learning data.");
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD LEARNING DATA
+   ========================================================= */
+
+function loadLearning(){
+
+    try{
+
+        const saved =
+            JSON.parse(
+                localStorage.getItem(LEARNING_KEY)
+            );
+
+        if(Array.isArray(saved)){
+
+            learningHistory=saved;
+
+        }
+
+    }catch(e){
+
+        console.log("Could not load learning data.");
 
     }
 
@@ -1021,23 +1287,10 @@ function getNewestEligibleDirection(){
 
 
 /* =========================================================
-   REJECTION ENTRY RULE
-   =========================================================
-
-   Bullish:
-   One metal = +5 or +6
-   AND
-   Other metal = +4 or better
-
-   Bearish:
-   One metal = -5 or -6
-   AND
-   Other metal = -4 or lower
-*/
+   EXISTING STRONG SETUP RULE
+   ========================================================= */
 
 function hasRejectionSetup(A,B){
-
-    /* BULLISH */
 
     const bullishA =
         A.positive>=5 &&
@@ -1058,8 +1311,6 @@ function hasRejectionSetup(A,B){
 
     }
 
-
-    /* BEARISH */
 
     const bearishA =
         A.negative>=5 &&
@@ -1091,40 +1342,7 @@ function hasRejectionSetup(A,B){
 
 /* =========================================================
    OPPOSITE RULE
-   =========================================================
-
-   OPPOSITE starts at 3 points.
-
-   If one pair has 3 or more BULLISH points
-   AND the other pair has 3 or more BEARISH points:
-
-       → OPPOSITE
-
-   OR
-
-   If one pair has 3 or more BEARISH points
-   AND the other pair has 3 or more BULLISH points:
-
-       → OPPOSITE
-
-   Examples:
-
-   +3 / -3  → OPPOSITE
-   +3 / -4  → OPPOSITE
-   +4 / -3  → OPPOSITE
-   +4 / -4  → OPPOSITE
-   +5 / -4  → OPPOSITE
-   +6 / -3  → OPPOSITE
-
-   Example:
-
-   XAU = +4 / -2
-   XAG = +2 / -4
-
-   → OPPOSITE
-
-   Anything below 3 does not qualify.
-*/
+   ========================================================= */
 
 function hasOppositeSetup(A,B){
 
@@ -1141,8 +1359,6 @@ function hasOppositeSetup(A,B){
         B.negative >= 3;
 
 
-    /* XAU bullish + XAG bearish */
-
     if(
         AHasBullish3 &&
         BHasBearish3
@@ -1152,8 +1368,6 @@ function hasOppositeSetup(A,B){
 
     }
 
-
-    /* XAU bearish + XAG bullish */
 
     if(
         AHasBearish3 &&
@@ -1183,24 +1397,7 @@ function updateResult(A,B){
     let gd=direction(B);
 
 
-    /* ================================================
-       OPPOSITE RULE — HIGHEST PRIORITY
-       ================================================
-
-       IMPORTANT:
-
-       This MUST be checked before all other
-       cross-metal entry rules.
-
-       Therefore:
-
-       +4/-2 vs +2/-4
-       +5/-1 vs +2/-4
-       +3/0 vs 0/-3
-
-       etc. will correctly show OPPOSITE
-       whenever there are 3+ opposing points.
-    */
+    /* OPPOSITE */
 
     let oppositeSetup=
         hasOppositeSetup(A,B);
@@ -1249,9 +1446,7 @@ function updateResult(A,B){
     }
 
 
-    /* ================================================
-       REJECTION ENTRY RULE
-       ================================================ */
+    /* EXISTING STRONG SETUP */
 
     let rejectionSetup=
         hasRejectionSetup(A,B);
@@ -1283,9 +1478,7 @@ function updateResult(A,B){
     }
 
 
-    /* ================================================
-       BOTH BULLISH
-       ================================================ */
+    /* BOTH BULLISH */
 
     if(xd===1 && gd===1){
 
@@ -1310,9 +1503,7 @@ function updateResult(A,B){
     }
 
 
-    /* ================================================
-       BOTH BEARISH
-       ================================================ */
+    /* BOTH BEARISH */
 
     if(xd===-1 && gd===-1){
 
@@ -1337,9 +1528,7 @@ function updateResult(A,B){
     }
 
 
-    /* ================================================
-       BEARISH CROSS-METAL D-VWAP RULE
-       ================================================ */
+    /* BEARISH CROSS-METAL */
 
     if(
         A.negative>=4 &&
@@ -1395,9 +1584,7 @@ function updateResult(A,B){
     }
 
 
-    /* ================================================
-       XAU ELIGIBLE — XAG NOT
-       ================================================ */
+    /* XAU ELIGIBLE */
 
     if(
         xd!==0 &&
@@ -1425,9 +1612,7 @@ function updateResult(A,B){
     }
 
 
-    /* ================================================
-       XAG ELIGIBLE — XAU NOT
-       ================================================ */
+    /* XAG ELIGIBLE */
 
     if(
         xd===0 &&
@@ -1455,9 +1640,7 @@ function updateResult(A,B){
     }
 
 
-    /* ================================================
-       NEITHER ELIGIBLE
-       ================================================ */
+    /* NEITHER */
 
     result.className="result wait";
 
@@ -1487,6 +1670,611 @@ function update(){
     displayMetal("xag",B);
 
     updateResult(A,B);
+
+    updateLearningDisplay();
+
+}
+
+
+/* =========================================================
+   CREATE SETUP FINGERPRINT
+   ========================================================= */
+
+function makeFingerprint(){
+
+    return [
+        xau.join(","),
+        xag.join(",")
+    ].join("|");
+
+}
+
+
+/* =========================================================
+   GET DIRECTION TEXT
+   ========================================================= */
+
+function directionText(value){
+
+    if(value===1){
+        return "BULLISH";
+    }
+
+    if(value===-1){
+        return "BEARISH";
+    }
+
+    return "NEUTRAL";
+
+}
+
+
+/* =========================================================
+   CREATE SETUP SNAPSHOT
+   ========================================================= */
+
+function createSetupSnapshot(){
+
+    const A=calculate(xau);
+    const B=calculate(xag);
+
+    return {
+
+        id:
+            Date.now().toString()+
+            Math.random().toString(36).slice(2),
+
+        timestamp:Date.now(),
+
+        xau:[...xau],
+
+        xag:[...xag],
+
+        xauPositive:A.positive,
+        xauNegative:A.negative,
+
+        xagPositive:B.positive,
+        xagNegative:B.negative,
+
+        xauDirection:direction(A),
+        xagDirection:direction(B),
+
+        fingerprint:makeFingerprint(),
+
+        outcome:"PENDING"
+
+    };
+
+}
+
+
+/* =========================================================
+   RECORD CURRENT SETUP
+   ========================================================= */
+
+function recordCurrentSetup(){
+
+    const A=calculate(xau);
+    const B=calculate(xag);
+
+    const xd=direction(A);
+    const gd=direction(B);
+
+    if(
+        xd===0 &&
+        gd===0
+    ){
+
+        alert(
+            "No ±4 eligible direction is currently present."
+        );
+
+        return;
+
+    }
+
+
+    if(hasOppositeSetup(A,B)){
+
+        alert(
+            "XAU + XAG are currently OPPOSITE. "+
+            "The learning system will not record this as a normal trade setup."
+        );
+
+        return;
+
+    }
+
+
+    pendingSetup=createSetupSnapshot();
+
+    document.getElementById(
+        "outcomeButtons"
+    ).style.display="grid";
+
+    updateLearningDisplay();
+
+}
+
+
+/* =========================================================
+   FINISH PENDING SETUP
+   ========================================================= */
+
+function finishPendingSetup(outcome){
+
+    if(!pendingSetup){
+        return;
+    }
+
+    pendingSetup.outcome=outcome;
+
+    learningHistory.unshift(
+        pendingSetup
+    );
+
+    saveLearning();
+
+    pendingSetup=null;
+
+    document.getElementById(
+        "outcomeButtons"
+    ).style.display="none";
+
+    updateLearningDisplay();
+
+}
+
+
+/* =========================================================
+   CANCEL PENDING SETUP
+   ========================================================= */
+
+function cancelPendingSetup(){
+
+    pendingSetup=null;
+
+    document.getElementById(
+        "outcomeButtons"
+    ).style.display="none";
+
+    updateLearningDisplay();
+
+}
+
+
+/* =========================================================
+   FORMAT POINTS
+   ========================================================= */
+
+function formatPoints(points){
+
+    return points.map(function(v){
+
+        if(v===1) return "+1";
+        if(v===-1) return "-1";
+        return "0";
+
+    }).join(" ");
+
+}
+
+
+/* =========================================================
+   FORMAT DATE
+   ========================================================= */
+
+function formatDate(timestamp){
+
+    return new Date(timestamp)
+        .toLocaleString();
+
+}
+
+
+/* =========================================================
+   GET COMPLETED HISTORY
+   ========================================================= */
+
+function getCompletedHistory(){
+
+    return learningHistory.filter(function(item){
+
+        return item.outcome==="WIN" ||
+               item.outcome==="LOSS";
+
+    });
+
+}
+
+
+/* =========================================================
+   CALCULATE OVERALL STATISTICS
+   ========================================================= */
+
+function calculateOverallStats(){
+
+    const completed=
+        getCompletedHistory();
+
+    const wins=
+        completed.filter(function(item){
+            return item.outcome==="WIN";
+        }).length;
+
+    const losses=
+        completed.filter(function(item){
+            return item.outcome==="LOSS";
+        }).length;
+
+    const total=
+        wins+losses;
+
+    const winRate=
+        total>0
+        ? ((wins/total)*100).toFixed(1)
+        : "0.0";
+
+    const netR=
+        (wins*3)-(losses*1);
+
+    return {
+        total,
+        wins,
+        losses,
+        winRate,
+        netR
+    };
+
+}
+
+
+/* =========================================================
+   GET EXACT SETUP STATISTICS
+   ========================================================= */
+
+function getSetupStats(fingerprint){
+
+    const trades=
+        getCompletedHistory()
+        .filter(function(item){
+
+            return item.fingerprint===fingerprint;
+
+        });
+
+    const wins=
+        trades.filter(function(item){
+
+            return item.outcome==="WIN";
+
+        }).length;
+
+    const losses=
+        trades.filter(function(item){
+
+            return item.outcome==="LOSS";
+
+        }).length;
+
+    const total=
+        wins+losses;
+
+    const winRate=
+        total>0
+        ? ((wins/total)*100).toFixed(1)
+        : "0.0";
+
+    const netR=
+        (wins*3)-(losses*1);
+
+    return {
+        total,
+        wins,
+        losses,
+        winRate,
+        netR
+    };
+
+}
+
+
+/* =========================================================
+   DISPLAY LEARNING STATUS
+   ========================================================= */
+
+function updateLearningDisplay(){
+
+    const current=
+        document.getElementById(
+            "learningCurrent"
+        );
+
+    const outcomeButtons=
+        document.getElementById(
+            "outcomeButtons"
+        );
+
+    const stats=
+        document.getElementById(
+            "learningStats"
+        );
+
+    if(pendingSetup){
+
+        current.innerHTML=`
+            <strong>PENDING TRADE</strong><br>
+            XAU: ${directionText(pendingSetup.xauDirection)}
+            ${pendingSetup.xauPositive >= 4
+                ? "+"+pendingSetup.xauPositive
+                : pendingSetup.xauNegative >= 4
+                ? "-"+pendingSetup.xauNegative
+                : ""}
+            &nbsp; | &nbsp;
+            XAG: ${directionText(pendingSetup.xagDirection)}
+            ${pendingSetup.xagPositive >= 4
+                ? "+"+pendingSetup.xagPositive
+                : pendingSetup.xagNegative >= 4
+                ? "-"+pendingSetup.xagNegative
+                : ""}
+            <br>
+            XAU points: ${formatPoints(pendingSetup.xau)}
+            <br>
+            XAG points: ${formatPoints(pendingSetup.xag)}
+            <br>
+            <strong>Record the result after the trade.</strong>
+        `;
+
+        outcomeButtons.style.display="grid";
+
+    }else{
+
+        current.innerHTML=
+            "NO SETUP RECORDED";
+
+        outcomeButtons.style.display="none";
+
+    }
+
+
+    const overall=
+        calculateOverallStats();
+
+    if(overall.total===0){
+
+        stats.innerHTML=
+            "No completed trades recorded yet.";
+
+    }else{
+
+        stats.innerHTML=`
+            <div class="stat-row">
+                <span>TOTAL TRADES</span>
+                <span>${overall.total}</span>
+            </div>
+
+            <div class="stat-row">
+                <span>WINS</span>
+                <span>${overall.wins}</span>
+            </div>
+
+            <div class="stat-row">
+                <span>LOSSES</span>
+                <span>${overall.losses}</span>
+            </div>
+
+            <div class="stat-row">
+                <span>WIN RATE</span>
+                <span>${overall.winRate}%</span>
+            </div>
+
+            <div class="stat-row">
+                <span>NET R</span>
+                <span>${overall.netR >= 0 ? "+" : ""}${overall.netR}R</span>
+            </div>
+        `;
+
+    }
+
+
+    renderHistory();
+
+}
+
+
+/* =========================================================
+   RENDER HISTORY
+   ========================================================= */
+
+function renderHistory(){
+
+    const container=
+        document.getElementById(
+            "learningHistory"
+        );
+
+    if(learningHistory.length===0){
+
+        container.innerHTML="";
+        return;
+
+    }
+
+
+    container.innerHTML="";
+
+
+    learningHistory.forEach(function(item){
+
+        const setupStats=
+            getSetupStats(
+                item.fingerprint
+            );
+
+        const div=
+            document.createElement("div");
+
+        if(item.outcome==="WIN"){
+
+            div.className=
+                "history-item history-win";
+
+        }else if(item.outcome==="LOSS"){
+
+            div.className=
+                "history-item history-loss";
+
+        }else{
+
+            div.className=
+                "history-item history-pending";
+
+        }
+
+
+        const outcomeText=
+            item.outcome==="WIN"
+            ? "✓ WIN +3R"
+            : item.outcome==="LOSS"
+            ? "✕ LOSS -1R"
+            : "PENDING";
+
+
+        div.innerHTML=`
+
+            <strong>${outcomeText}</strong><br>
+
+            ${formatDate(item.timestamp)}<br>
+
+            XAU:
+            ${formatPoints(item.xau)}
+            <br>
+
+            XAG:
+            ${formatPoints(item.xag)}
+            <br>
+
+            Exact setup:
+            ${setupStats.total} trades |
+            ${setupStats.winRate}% win rate |
+            ${setupStats.netR >= 0 ? "+" : ""}${setupStats.netR}R
+
+            <div class="history-buttons">
+
+                ${
+                    item.outcome==="PENDING"
+                    ? `
+                    <button
+                        class="win"
+                        onclick="finishHistoryItem('${item.id}','WIN')"
+                    >
+                        WIN +3R
+                    </button>
+
+                    <button
+                        class="loss"
+                        onclick="finishHistoryItem('${item.id}','LOSS')"
+                    >
+                        LOSS -1R
+                    </button>
+                    `
+                    : `
+                    <button
+                        class="delete-history"
+                        onclick="deleteHistoryItem('${item.id}')"
+                    >
+                        DELETE
+                    </button>
+                    `
+                }
+
+            </div>
+
+        `;
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+/* =========================================================
+   FINISH HISTORY ITEM
+   ========================================================= */
+
+function finishHistoryItem(id,outcome){
+
+    const item=
+        learningHistory.find(function(x){
+
+            return x.id===id;
+
+        });
+
+    if(!item){
+        return;
+    }
+
+    item.outcome=outcome;
+
+    saveLearning();
+
+    renderHistory();
+
+    updateLearningDisplay();
+
+}
+
+
+/* =========================================================
+   DELETE HISTORY ITEM
+   ========================================================= */
+
+function deleteHistoryItem(id){
+
+    learningHistory=
+        learningHistory.filter(function(item){
+
+            return item.id!==id;
+
+        });
+
+    saveLearning();
+
+    updateLearningDisplay();
+
+}
+
+
+/* =========================================================
+   CLEAR ALL LEARNING DATA
+   ========================================================= */
+
+function clearLearningHistory(){
+
+    if(learningHistory.length===0){
+
+        return;
+
+    }
+
+    const confirmed=
+        confirm(
+            "Delete ALL learning/trade history?"
+        );
+
+    if(!confirmed){
+        return;
+    }
+
+    learningHistory=[];
+
+    pendingSetup=null;
+
+    saveLearning();
+
+    updateLearningDisplay();
 
 }
 
@@ -1617,6 +2405,8 @@ function restoreButtons(){
    ========================================================= */
 
 loadState();
+
+loadLearning();
 
 restoreButtons();
 
