@@ -292,6 +292,75 @@ button.selected.zero{
     line-height:1.5;
 }
 
+.entry-form{
+    margin-top:7px;
+    background:#f7f7f7;
+    border:1px solid #ddd;
+    border-radius:9px;
+    padding:8px;
+}
+
+.entry-title{
+    text-align:center;
+    font-size:11px;
+    font-weight:950;
+    margin-bottom:7px;
+}
+
+.entry-label{
+    display:block;
+    font-size:9px;
+    font-weight:900;
+    margin:5px 0 3px;
+}
+
+.entry-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:5px;
+}
+
+.entry-grid.three{
+    grid-template-columns:1fr 1fr 1fr;
+}
+
+.entry-select,
+.entry-input{
+    width:100%;
+    border:1px solid #ccc;
+    background:#fff;
+    color:#222;
+    border-radius:7px;
+    padding:8px 5px;
+    font-size:10px;
+    font-weight:800;
+}
+
+.entry-direction button,
+.entry-pair button{
+    padding:8px 2px;
+}
+
+.entry-pair button.active,
+.entry-direction button.active{
+    border:2px solid #244b70;
+    background:#e3edf8;
+    color:#244b70;
+}
+
+.start-entry{
+    margin-top:7px;
+    width:100%;
+    background:#d9f5df;
+    color:#145c2c;
+    border-color:#a7dcb2;
+}
+
+.cancel-entry{
+    margin-top:5px;
+    width:100%;
+}
+
 .learning-buttons{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -345,7 +414,7 @@ button.selected.zero{
 
 .learning-history{
     margin-top:8px;
-    max-height:250px;
+    max-height:350px;
     overflow-y:auto;
 }
 
@@ -370,6 +439,29 @@ button.selected.zero{
 
 .history-pending{
     border-left:4px solid #d59b00;
+}
+
+.history-entry{
+    background:#eeeeee;
+    border-radius:6px;
+    padding:5px;
+    margin-top:5px;
+}
+
+.changes{
+    margin-top:5px;
+    background:#fff4d6;
+    border-radius:6px;
+    padding:5px;
+}
+
+.change-item{
+    border-bottom:1px solid #ddd;
+    padding:2px 0;
+}
+
+.change-item:last-child{
+    border-bottom:none;
 }
 
 .history-buttons{
@@ -750,17 +842,96 @@ SETUP LEARNING SYSTEM
 </div>
 
 <div class="learning-subtitle">
-This does NOT change your strategy. It records exactly what setup you traded
-and learns which setup patterns actually produce results.
+Records your exact setup, entry pair, entry location and every point change after entry.
 </div>
 
 <div id="learningCurrent" class="learning-current">
 NO SETUP RECORDED
 </div>
 
-<div class="learning-buttons">
 
-<button class="record" onclick="recordCurrentSetup()">
+<!-- ================= ENTRY FORM ================= -->
+
+<div id="entryForm" class="entry-form" style="display:none;">
+
+<div class="entry-title">
+RECORD YOUR ACTUAL ENTRY
+</div>
+
+<label class="entry-label">
+ENTRY PAIR
+</label>
+
+<div class="entry-grid entry-pair">
+<button id="entryXAU" onclick="selectEntryPair('XAU')">
+XAU
+</button>
+
+<button id="entryXAG" onclick="selectEntryPair('XAG')">
+XAG
+</button>
+</div>
+
+
+<label class="entry-label">
+ENTRY DIRECTION
+</label>
+
+<div class="entry-grid entry-direction">
+<button id="entryBUY" onclick="selectEntryDirection('BUY')">
+BUY
+</button>
+
+<button id="entrySELL" onclick="selectEntryDirection('SELL')">
+SELL
+</button>
+</div>
+
+
+<label class="entry-label">
+ENTRY FROM
+</label>
+
+<select id="entryFrom" class="entry-select">
+<option value="">SELECT ENTRY POINT</option>
+<option value="Daily VWAP">Daily VWAP</option>
+<option value="Weekly VAH">Weekly VAH</option>
+<option value="Weekly VAL">Weekly VAL</option>
+<option value="Daily VAH">Daily VAH</option>
+<option value="Daily VAL">Daily VAL</option>
+<option value="W-POC">W-POC</option>
+<option value="D-POC">D-POC</option>
+<option value="Other">Other</option>
+</select>
+
+
+<label class="entry-label">
+ENTRY PRICE
+</label>
+
+<input
+    id="entryPrice"
+    class="entry-input"
+    type="number"
+    step="any"
+    placeholder="Enter price"
+/>
+
+
+<button class="start-entry" onclick="startRecordedTrade()">
+✓ START RECORDING THIS TRADE
+</button>
+
+<button class="cancel-entry" onclick="cancelEntryForm()">
+CANCEL
+</button>
+
+</div>
+
+
+<div id="recordButtonArea" class="learning-buttons">
+
+<button class="record" onclick="openEntryForm()">
 RECORD CURRENT SETUP
 </button>
 
@@ -769,6 +940,7 @@ CANCEL
 </button>
 
 </div>
+
 
 <div id="outcomeButtons" class="learning-buttons" style="display:none;">
 
@@ -781,6 +953,7 @@ CANCEL
 </button>
 
 </div>
+
 
 <div id="learningStats" class="learning-stats">
 No completed trades recorded yet.
@@ -804,20 +977,36 @@ RESET
 <script>
 
 /* =========================================================
-   PERSISTENT CALCULATOR DATA
+   STORAGE
    ========================================================= */
 
-const STORAGE_KEY = "xau_xag_strategy_calculator_v2";
-const LEARNING_KEY = "xau_xag_strategy_learning_v1";
+const STORAGE_KEY =
+    "xau_xag_strategy_calculator_v2";
 
-let xau = [null,null,null,null,null,null];
-let xag = [null,null,null,null,null,null];
+const LEARNING_KEY =
+    "xau_xag_strategy_learning_v2";
 
-let eligibilityTimes = {
-    xauBull: null,
-    xauBear: null,
-    xagBull: null,
-    xagBear: null
+const PENDING_KEY =
+    "xau_xag_strategy_pending_v2";
+
+
+/* =========================================================
+   CALCULATOR DATA
+   ========================================================= */
+
+let xau=[
+    null,null,null,null,null,null
+];
+
+let xag=[
+    null,null,null,null,null,null
+];
+
+let eligibilityTimes={
+    xauBull:null,
+    xauBear:null,
+    xagBull:null,
+    xagBear:null
 };
 
 
@@ -825,9 +1014,13 @@ let eligibilityTimes = {
    LEARNING DATA
    ========================================================= */
 
-let learningHistory = [];
+let learningHistory=[];
 
-let pendingSetup = null;
+let pendingSetup=null;
+
+let entryPair=null;
+
+let entryDirection=null;
 
 
 /* =========================================================
@@ -836,10 +1029,10 @@ let pendingSetup = null;
 
 function saveState(){
 
-    const state = {
-        xau: xau,
-        xag: xag,
-        eligibilityTimes: eligibilityTimes
+    const state={
+        xau:xau,
+        xag:xag,
+        eligibilityTimes:eligibilityTimes
     };
 
     try{
@@ -851,7 +1044,9 @@ function saveState(){
 
     }catch(e){
 
-        console.log("Could not save calculator state.");
+        console.log(
+            "Could not save calculator state."
+        );
 
     }
 
@@ -866,7 +1061,7 @@ function loadState(){
 
     try{
 
-        const saved =
+        const saved=
             JSON.parse(
                 localStorage.getItem(STORAGE_KEY)
             );
@@ -902,7 +1097,9 @@ function loadState(){
 
     }catch(e){
 
-        console.log("Could not load calculator state.");
+        console.log(
+            "Could not load calculator state."
+        );
 
     }
 
@@ -910,7 +1107,7 @@ function loadState(){
 
 
 /* =========================================================
-   SAVE LEARNING DATA
+   SAVE LEARNING
    ========================================================= */
 
 function saveLearning(){
@@ -924,7 +1121,9 @@ function saveLearning(){
 
     }catch(e){
 
-        console.log("Could not save learning data.");
+        console.log(
+            "Could not save learning data."
+        );
 
     }
 
@@ -932,14 +1131,14 @@ function saveLearning(){
 
 
 /* =========================================================
-   LOAD LEARNING DATA
+   LOAD LEARNING
    ========================================================= */
 
 function loadLearning(){
 
     try{
 
-        const saved =
+        const saved=
             JSON.parse(
                 localStorage.getItem(LEARNING_KEY)
             );
@@ -952,7 +1151,81 @@ function loadLearning(){
 
     }catch(e){
 
-        console.log("Could not load learning data.");
+        console.log(
+            "Could not load learning data."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   SAVE PENDING SETUP
+   ========================================================= */
+
+function savePendingSetup(){
+
+    try{
+
+        if(pendingSetup){
+
+            localStorage.setItem(
+                PENDING_KEY,
+                JSON.stringify(pendingSetup)
+            );
+
+        }else{
+
+            localStorage.removeItem(
+                PENDING_KEY
+            );
+
+        }
+
+    }catch(e){
+
+        console.log(
+            "Could not save pending setup."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD PENDING SETUP
+   ========================================================= */
+
+function loadPendingSetup(){
+
+    try{
+
+        const saved=
+            JSON.parse(
+                localStorage.getItem(PENDING_KEY)
+            );
+
+        if(saved){
+
+            pendingSetup=saved;
+
+            entryPair=
+                pendingSetup.entryPair ||
+                null;
+
+            entryDirection=
+                pendingSetup.entryDirection ||
+                null;
+
+        }
+
+    }catch(e){
+
+        console.log(
+            "Could not load pending setup."
+        );
 
     }
 
@@ -972,19 +1245,27 @@ function highlightButton(button,value){
         "zero"
     );
 
-    button.classList.add("selected");
+    button.classList.add(
+        "selected"
+    );
 
     if(value===1){
 
-        button.classList.add("plus");
+        button.classList.add(
+            "plus"
+        );
 
     }else if(value===-1){
 
-        button.classList.add("minus");
+        button.classList.add(
+            "minus"
+        );
 
     }else{
 
-        button.classList.add("zero");
+        button.classList.add(
+            "zero"
+        );
 
     }
 
@@ -1011,24 +1292,74 @@ function clearButton(button){
    SELECT POINT
    ========================================================= */
 
-function choose(button,metal,pointIndex,value){
+function choose(
+    button,
+    metal,
+    pointIndex,
+    value
+){
 
-    let array =
+    let array=
         metal==="xau"
-        ? xau
-        : xag;
+        ?xau
+        :xag;
+
+    const oldValue=
+        array[pointIndex];
+
+    /* -----------------------------------------
+       Record point movement AFTER ENTRY
+       ----------------------------------------- */
+
+    if(
+        pendingSetup &&
+        pendingSetup.entryStarted &&
+        oldValue!==value
+    ){
+
+        pendingSetup.pointChanges.push({
+
+            timestamp:Date.now(),
+
+            metal:
+                metal==="xau"
+                ?"XAU"
+                :"XAG",
+
+            point:
+                pointIndex+1,
+
+            oldValue:
+                oldValue,
+
+            newValue:
+                value
+
+        });
+
+        savePendingSetup();
+
+    }
+
 
     array[pointIndex]=value;
 
-    let point=button.closest(".point");
+
+    let point=
+        button.closest(".point");
 
     point
         .querySelectorAll("button")
         .forEach(clearButton);
 
-    highlightButton(button,value);
+    highlightButton(
+        button,
+        value
+    );
 
-    updateEligibilityTime(metal);
+    updateEligibilityTime(
+        metal
+    );
 
     saveState();
 
@@ -1050,23 +1381,31 @@ function calculate(array){
     array.forEach(function(value){
 
         if(value!==null){
+
             selected++;
+
         }
 
         if(value===1){
+
             positive++;
+
         }
 
         if(value===-1){
+
             negative++;
+
         }
 
     });
 
     return {
+
         positive,
         negative,
         selected
+
     };
 
 }
@@ -1079,11 +1418,15 @@ function calculate(array){
 function direction(data){
 
     if(data.positive>=4){
+
         return 1;
+
     }
 
     if(data.negative>=4){
+
         return -1;
+
     }
 
     return 0;
@@ -1092,44 +1435,60 @@ function direction(data){
 
 
 /* =========================================================
-   REMEMBER WHEN METAL BECAME ELIGIBLE
+   REMEMBER ELIGIBILITY
    ========================================================= */
 
 function updateEligibilityTime(metal){
 
-    const data =
+    const data=
         calculate(
             metal==="xau"
-            ? xau
-            : xag
+            ?xau
+            :xag
         );
 
-    const now=Date.now();
+    const now=
+        Date.now();
+
 
     if(metal==="xau"){
 
         if(data.positive>=4){
 
-            if(eligibilityTimes.xauBull===null){
-                eligibilityTimes.xauBull=now;
+            if(
+                eligibilityTimes.xauBull===
+                null
+            ){
+
+                eligibilityTimes.xauBull=
+                    now;
+
             }
 
         }else{
 
-            eligibilityTimes.xauBull=null;
+            eligibilityTimes.xauBull=
+                null;
 
         }
 
 
         if(data.negative>=4){
 
-            if(eligibilityTimes.xauBear===null){
-                eligibilityTimes.xauBear=now;
+            if(
+                eligibilityTimes.xauBear===
+                null
+            ){
+
+                eligibilityTimes.xauBear=
+                    now;
+
             }
 
         }else{
 
-            eligibilityTimes.xauBear=null;
+            eligibilityTimes.xauBear=
+                null;
 
         }
 
@@ -1137,26 +1496,40 @@ function updateEligibilityTime(metal){
 
         if(data.positive>=4){
 
-            if(eligibilityTimes.xagBull===null){
-                eligibilityTimes.xagBull=now;
+            if(
+                eligibilityTimes.xagBull===
+                null
+            ){
+
+                eligibilityTimes.xagBull=
+                    now;
+
             }
 
         }else{
 
-            eligibilityTimes.xagBull=null;
+            eligibilityTimes.xagBull=
+                null;
 
         }
 
 
         if(data.negative>=4){
 
-            if(eligibilityTimes.xagBear===null){
-                eligibilityTimes.xagBear=now;
+            if(
+                eligibilityTimes.xagBear===
+                null
+            ){
+
+                eligibilityTimes.xagBear=
+                    now;
+
             }
 
         }else{
 
-            eligibilityTimes.xagBear=null;
+            eligibilityTimes.xagBear=
+                null;
 
         }
 
@@ -1169,7 +1542,10 @@ function updateEligibilityTime(metal){
    DISPLAY METAL
    ========================================================= */
 
-function displayMetal(metal,data){
+function displayMetal(
+    metal,
+    data
+){
 
     let score=
         document.getElementById(
@@ -1186,6 +1562,7 @@ function displayMetal(metal,data){
             metal+"Eligibility"
         );
 
+
     score.innerHTML=
         '<span class="positive">+'+
         data.positive+
@@ -1193,27 +1570,37 @@ function displayMetal(metal,data){
         data.negative+
         '</span>';
 
+
     status.innerHTML=
         data.selected+
         " / 6 SELECTED";
 
-    let dir=direction(data);
 
-    eligibility.className="eligibility";
+    let dir=
+        direction(data);
+
+
+    eligibility.className=
+        "eligibility";
+
 
     if(dir===1){
 
         eligibility.innerHTML=
             "✓ BULLISH — ELIGIBLE";
 
-        eligibility.classList.add("bull");
+        eligibility.classList.add(
+            "bull"
+        );
 
     }else if(dir===-1){
 
         eligibility.innerHTML=
             "✓ BEARISH — ELIGIBLE";
 
-        eligibility.classList.add("bear");
+        eligibility.classList.add(
+            "bear"
+        );
 
     }else{
 
@@ -1233,53 +1620,86 @@ function getNewestEligibleDirection(){
 
     let candidates=[];
 
-    if(eligibilityTimes.xauBull!==null){
+
+    if(
+        eligibilityTimes.xauBull!==null
+    ){
 
         candidates.push({
+
             metal:"XAU",
             direction:1,
-            time:eligibilityTimes.xauBull
+            time:
+                eligibilityTimes.xauBull
+
         });
 
     }
 
-    if(eligibilityTimes.xauBear!==null){
+
+    if(
+        eligibilityTimes.xauBear!==null
+    ){
 
         candidates.push({
+
             metal:"XAU",
             direction:-1,
-            time:eligibilityTimes.xauBear
+            time:
+                eligibilityTimes.xauBear
+
         });
 
     }
 
-    if(eligibilityTimes.xagBull!==null){
+
+    if(
+        eligibilityTimes.xagBull!==null
+    ){
 
         candidates.push({
+
             metal:"XAG",
             direction:1,
-            time:eligibilityTimes.xagBull
+            time:
+                eligibilityTimes.xagBull
+
         });
 
     }
 
-    if(eligibilityTimes.xagBear!==null){
+
+    if(
+        eligibilityTimes.xagBear!==null
+    ){
 
         candidates.push({
+
             metal:"XAG",
             direction:-1,
-            time:eligibilityTimes.xagBear
+            time:
+                eligibilityTimes.xagBear
+
         });
 
     }
+
 
     if(candidates.length===0){
+
         return null;
+
     }
 
-    candidates.sort(function(a,b){
-        return b.time-a.time;
-    });
+
+    candidates.sort(
+        function(a,b){
+
+            return b.time-a.time;
+
+        }
+    );
+
 
     return candidates[0];
 
@@ -1292,49 +1712,63 @@ function getNewestEligibleDirection(){
 
 function hasRejectionSetup(A,B){
 
-    const bullishA =
+    const bullishA=
         A.positive>=5 &&
         A.positive<=6 &&
         B.positive>=4;
 
-    const bullishB =
+    const bullishB=
         B.positive>=5 &&
         B.positive<=6 &&
         A.positive>=4;
 
-    if(bullishA || bullishB){
+
+    if(
+        bullishA ||
+        bullishB
+    ){
 
         return {
+
             direction:1,
             valid:true
+
         };
 
     }
 
 
-    const bearishA =
+    const bearishA=
         A.negative>=5 &&
         A.negative<=6 &&
         B.negative>=4;
 
-    const bearishB =
+    const bearishB=
         B.negative>=5 &&
         B.negative<=6 &&
         A.negative>=4;
 
-    if(bearishA || bearishB){
+
+    if(
+        bearishA ||
+        bearishB
+    ){
 
         return {
+
             direction:-1,
             valid:true
+
         };
 
     }
 
 
     return {
+
         direction:0,
         valid:false
+
     };
 
 }
@@ -1346,17 +1780,17 @@ function hasRejectionSetup(A,B){
 
 function hasOppositeSetup(A,B){
 
-    const AHasBullish3 =
-        A.positive >= 3;
+    const AHasBullish3=
+        A.positive>=3;
 
-    const AHasBearish3 =
-        A.negative >= 3;
+    const AHasBearish3=
+        A.negative>=3;
 
-    const BHasBullish3 =
-        B.positive >= 3;
+    const BHasBullish3=
+        B.positive>=3;
 
-    const BHasBearish3 =
-        B.negative >= 3;
+    const BHasBearish3=
+        B.negative>=3;
 
 
     if(
@@ -1391,10 +1825,16 @@ function hasOppositeSetup(A,B){
 function updateResult(A,B){
 
     let result=
-        document.getElementById("result");
+        document.getElementById(
+            "result"
+        );
 
-    let xd=direction(A);
-    let gd=direction(B);
+
+    let xd=
+        direction(A);
+
+    let gd=
+        direction(B);
 
 
     /* OPPOSITE */
@@ -1402,13 +1842,16 @@ function updateResult(A,B){
     let oppositeSetup=
         hasOppositeSetup(A,B);
 
+
     if(oppositeSetup){
 
         let newest=
             getNewestEligibleDirection();
 
+
         let newestText=
             "No ±4 direction has been established yet.";
+
 
         if(newest){
 
@@ -1421,11 +1864,16 @@ function updateResult(A,B){
                     ?"BULLISH"
                     :"BEARISH"
                 )+".";
+
         }
 
-        result.className="result bad";
+
+        result.className=
+            "result bad";
+
 
         result.innerHTML=`
+
             <div class="main">
                 XAU + XAG OPPOSITE
             </div>
@@ -1439,6 +1887,7 @@ function updateResult(A,B){
                 ${newestText}
                 XAG IS MORE DOMINANT.
             </div>
+
         `;
 
         return;
@@ -1451,17 +1900,26 @@ function updateResult(A,B){
     let rejectionSetup=
         hasRejectionSetup(A,B);
 
+
     if(
         rejectionSetup.valid &&
         xd===rejectionSetup.direction &&
         gd===rejectionSetup.direction
     ){
 
-        result.className="result good";
+        result.className=
+            "result good";
+
 
         result.innerHTML=`
+
             <div class="main">
-                XAU + XAG ${rejectionSetup.direction===1 ? "BULLISH" : "BEARISH"}
+                XAU + XAG
+                ${
+                    rejectionSetup.direction===1
+                    ?"BULLISH"
+                    :"BEARISH"
+                }
             </div>
 
             <div class="sub">
@@ -1471,6 +1929,7 @@ function updateResult(A,B){
             <div class="small">
                 Strong confirmation: one metal has ±5 or better and the other has at least ±4.
             </div>
+
         `;
 
         return;
@@ -1480,11 +1939,17 @@ function updateResult(A,B){
 
     /* BOTH BULLISH */
 
-    if(xd===1 && gd===1){
+    if(
+        xd===1 &&
+        gd===1
+    ){
 
-        result.className="result good";
+        result.className=
+            "result good";
+
 
         result.innerHTML=`
+
             <div class="main">
                 XAU + XAG BULLISH
             </div>
@@ -1496,6 +1961,7 @@ function updateResult(A,B){
             <div class="small">
                 Wait for the D-VWAP entry rather than forcing a distant entry.
             </div>
+
         `;
 
         return;
@@ -1505,11 +1971,17 @@ function updateResult(A,B){
 
     /* BOTH BEARISH */
 
-    if(xd===-1 && gd===-1){
+    if(
+        xd===-1 &&
+        gd===-1
+    ){
 
-        result.className="result good";
+        result.className=
+            "result good";
+
 
         result.innerHTML=`
+
             <div class="main">
                 XAU + XAG BEARISH
             </div>
@@ -1521,6 +1993,7 @@ function updateResult(A,B){
             <div class="small">
                 Wait for the D-VWAP entry rather than forcing a distant entry.
             </div>
+
         `;
 
         return;
@@ -1536,9 +2009,12 @@ function updateResult(A,B){
         B.negative<=3
     ){
 
-        result.className="result wait";
+        result.className=
+            "result wait";
+
 
         result.innerHTML=`
+
             <div class="main">
                 ENTER XAG FROM D-VWAP
             </div>
@@ -1550,6 +2026,7 @@ function updateResult(A,B){
             <div class="small">
                 XAU has stronger bearish confirmation while XAG is at −1 to −3.
             </div>
+
         `;
 
         return;
@@ -1563,9 +2040,12 @@ function updateResult(A,B){
         A.negative<=3
     ){
 
-        result.className="result wait";
+        result.className=
+            "result wait";
+
 
         result.innerHTML=`
+
             <div class="main">
                 ENTER XAU FROM D-VWAP
             </div>
@@ -1577,6 +2057,7 @@ function updateResult(A,B){
             <div class="small">
                 XAG has stronger bearish confirmation while XAU is at −1 to −3.
             </div>
+
         `;
 
         return;
@@ -1591,9 +2072,12 @@ function updateResult(A,B){
         gd===0
     ){
 
-        result.className="result wait";
+        result.className=
+            "result wait";
+
 
         result.innerHTML=`
+
             <div class="main">
                 PREFER GOLD D-VWAP FOR ENTRY
             </div>
@@ -1605,6 +2089,7 @@ function updateResult(A,B){
             <div class="small">
                 XAU is eligible while XAG has not reached ±4.
             </div>
+
         `;
 
         return;
@@ -1619,9 +2104,12 @@ function updateResult(A,B){
         gd!==0
     ){
 
-        result.className="result wait";
+        result.className=
+            "result wait";
+
 
         result.innerHTML=`
+
             <div class="main">
                 PREFER SILVER D-VWAP FOR ENTRY
             </div>
@@ -1633,6 +2121,7 @@ function updateResult(A,B){
             <div class="small">
                 XAG is eligible while XAU has not reached ±4.
             </div>
+
         `;
 
         return;
@@ -1642,9 +2131,12 @@ function updateResult(A,B){
 
     /* NEITHER */
 
-    result.className="result wait";
+    result.className=
+        "result wait";
+
 
     result.innerHTML=`
+
         <div class="main">
             DON'T OVERTRADE
         </div>
@@ -1652,6 +2144,7 @@ function updateResult(A,B){
         <div class="sub">
             NO CLEAR DIRECTION YET — WAIT FOR A ±4 SIGNAL
         </div>
+
     `;
 
 }
@@ -1663,13 +2156,29 @@ function updateResult(A,B){
 
 function update(){
 
-    let A=calculate(xau);
-    let B=calculate(xag);
+    let A=
+        calculate(xau);
 
-    displayMetal("xau",A);
-    displayMetal("xag",B);
+    let B=
+        calculate(xag);
 
-    updateResult(A,B);
+
+    displayMetal(
+        "xau",
+        A
+    );
+
+    displayMetal(
+        "xag",
+        B
+    );
+
+
+    updateResult(
+        A,
+        B
+    );
+
 
     updateLearningDisplay();
 
@@ -1677,34 +2186,87 @@ function update(){
 
 
 /* =========================================================
-   CREATE SETUP FINGERPRINT
+   CREATE FINGERPRINT
    ========================================================= */
 
 function makeFingerprint(){
 
     return [
+
         xau.join(","),
+
         xag.join(",")
+
     ].join("|");
 
 }
 
 
 /* =========================================================
-   GET DIRECTION TEXT
+   DIRECTION TEXT
    ========================================================= */
 
 function directionText(value){
 
     if(value===1){
+
         return "BULLISH";
+
     }
 
     if(value===-1){
+
         return "BEARISH";
+
     }
 
     return "NEUTRAL";
+
+}
+
+
+/* =========================================================
+   FORMAT POINT VALUE
+   ========================================================= */
+
+function formatPointValue(value){
+
+    if(value===1){
+
+        return "+1";
+
+    }
+
+    if(value===-1){
+
+        return "-1";
+
+    }
+
+    if(value===0){
+
+        return "0";
+
+    }
+
+    return "—";
+
+}
+
+
+/* =========================================================
+   FORMAT POINTS
+   ========================================================= */
+
+function formatPoints(points){
+
+    return points.map(
+        function(v){
+
+            return formatPointValue(v);
+
+        }
+    ).join(" ");
 
 }
 
@@ -1715,31 +2277,64 @@ function directionText(value){
 
 function createSetupSnapshot(){
 
-    const A=calculate(xau);
-    const B=calculate(xag);
+    const A=
+        calculate(xau);
+
+    const B=
+        calculate(xag);
+
 
     return {
 
         id:
             Date.now().toString()+
-            Math.random().toString(36).slice(2),
+            Math.random()
+            .toString(36)
+            .slice(2),
 
-        timestamp:Date.now(),
+        timestamp:
+            Date.now(),
 
-        xau:[...xau],
+        xau:
+            [...xau],
 
-        xag:[...xag],
+        xag:
+            [...xag],
 
-        xauPositive:A.positive,
-        xauNegative:A.negative,
+        xauPositive:
+            A.positive,
 
-        xagPositive:B.positive,
-        xagNegative:B.negative,
+        xauNegative:
+            A.negative,
 
-        xauDirection:direction(A),
-        xagDirection:direction(B),
+        xagPositive:
+            B.positive,
 
-        fingerprint:makeFingerprint(),
+        xagNegative:
+            B.negative,
+
+        xauDirection:
+            direction(A),
+
+        xagDirection:
+            direction(B),
+
+        fingerprint:
+            makeFingerprint(),
+
+        entryStarted:false,
+
+        entryPair:null,
+
+        entryDirection:null,
+
+        entryFrom:null,
+
+        entryPrice:null,
+
+        entryTimestamp:null,
+
+        pointChanges:[],
 
         outcome:"PENDING"
 
@@ -1749,16 +2344,24 @@ function createSetupSnapshot(){
 
 
 /* =========================================================
-   RECORD CURRENT SETUP
+   OPEN ENTRY FORM
    ========================================================= */
 
-function recordCurrentSetup(){
+function openEntryForm(){
 
-    const A=calculate(xau);
-    const B=calculate(xag);
+    const A=
+        calculate(xau);
 
-    const xd=direction(A);
-    const gd=direction(B);
+    const B=
+        calculate(xag);
+
+
+    const xd=
+        direction(A);
+
+    const gd=
+        direction(B);
+
 
     if(
         xd===0 &&
@@ -1786,11 +2389,49 @@ function recordCurrentSetup(){
     }
 
 
-    pendingSetup=createSetupSnapshot();
+    pendingSetup=
+        createSetupSnapshot();
+
+
+    entryPair=null;
+
+    entryDirection=null;
+
 
     document.getElementById(
-        "outcomeButtons"
-    ).style.display="grid";
+        "entryForm"
+    ).style.display="block";
+
+
+    document.getElementById(
+        "recordButtonArea"
+    ).style.display="none";
+
+
+    document.getElementById(
+        "entryFrom"
+    ).value="";
+
+
+    document.getElementById(
+        "entryPrice"
+    ).value="";
+
+
+    document
+        .querySelectorAll(
+            ".entry-pair button,.entry-direction button"
+        )
+        .forEach(function(button){
+
+            button.classList.remove(
+                "active"
+            );
+
+        });
+
+
+    savePendingSetup();
 
     updateLearningDisplay();
 
@@ -1798,28 +2439,226 @@ function recordCurrentSetup(){
 
 
 /* =========================================================
-   FINISH PENDING SETUP
+   SELECT ENTRY PAIR
    ========================================================= */
 
-function finishPendingSetup(outcome){
+function selectEntryPair(pair){
 
-    if(!pendingSetup){
-        return;
+    entryPair=pair;
+
+
+    document
+        .querySelectorAll(
+            ".entry-pair button"
+        )
+        .forEach(function(button){
+
+            button.classList.remove(
+                "active"
+            );
+
+        });
+
+
+    if(pair==="XAU"){
+
+        document.getElementById(
+            "entryXAU"
+        ).classList.add(
+            "active"
+        );
+
+    }else{
+
+        document.getElementById(
+            "entryXAG"
+        ).classList.add(
+            "active"
+        );
+
     }
 
-    pendingSetup.outcome=outcome;
+}
 
-    learningHistory.unshift(
-        pendingSetup
-    );
 
-    saveLearning();
+/* =========================================================
+   SELECT ENTRY DIRECTION
+   ========================================================= */
 
-    pendingSetup=null;
+function selectEntryDirection(
+    dir
+){
+
+    entryDirection=dir;
+
+
+    document
+        .querySelectorAll(
+            ".entry-direction button"
+        )
+        .forEach(function(button){
+
+            button.classList.remove(
+                "active"
+            );
+
+        });
+
+
+    if(dir==="BUY"){
+
+        document.getElementById(
+            "entryBUY"
+        ).classList.add(
+            "active"
+        );
+
+    }else{
+
+        document.getElementById(
+            "entrySELL"
+        ).classList.add(
+            "active"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   START ACTUAL TRADE RECORDING
+   ========================================================= */
+
+function startRecordedTrade(){
+
+    if(!pendingSetup){
+
+        return;
+
+    }
+
+
+    const entryFrom=
+        document.getElementById(
+            "entryFrom"
+        ).value;
+
+
+    const entryPrice=
+        document.getElementById(
+            "entryPrice"
+        ).value;
+
+
+    if(!entryPair){
+
+        alert(
+            "Select XAU or XAG."
+        );
+
+        return;
+
+    }
+
+
+    if(!entryDirection){
+
+        alert(
+            "Select BUY or SELL."
+        );
+
+        return;
+
+    }
+
+
+    if(!entryFrom){
+
+        alert(
+            "Select where you entered from."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        entryPrice==="" ||
+        !isFinite(Number(entryPrice))
+    ){
+
+        alert(
+            "Enter your entry price."
+        );
+
+        return;
+
+    }
+
+
+    pendingSetup.entryStarted=
+        true;
+
+    pendingSetup.entryPair=
+        entryPair;
+
+    pendingSetup.entryDirection=
+        entryDirection;
+
+    pendingSetup.entryFrom=
+        entryFrom;
+
+    pendingSetup.entryPrice=
+        Number(entryPrice);
+
+    pendingSetup.entryTimestamp=
+        Date.now();
+
+
+    savePendingSetup();
+
+
+    document.getElementById(
+        "entryForm"
+    ).style.display="none";
+
 
     document.getElementById(
         "outcomeButtons"
+    ).style.display="grid";
+
+
+    updateLearningDisplay();
+
+}
+
+
+/* =========================================================
+   CANCEL ENTRY FORM
+   ========================================================= */
+
+function cancelEntryForm(){
+
+    pendingSetup=null;
+
+    entryPair=null;
+
+    entryDirection=null;
+
+
+    document.getElementById(
+        "entryForm"
     ).style.display="none";
+
+
+    document.getElementById(
+        "recordButtonArea"
+    ).style.display="grid";
+
+
+    savePendingSetup();
 
     updateLearningDisplay();
 
@@ -1834,9 +2673,27 @@ function cancelPendingSetup(){
 
     pendingSetup=null;
 
+    entryPair=null;
+
+    entryDirection=null;
+
+
+    document.getElementById(
+        "entryForm"
+    ).style.display="none";
+
+
+    document.getElementById(
+        "recordButtonArea"
+    ).style.display="grid";
+
+
     document.getElementById(
         "outcomeButtons"
     ).style.display="none";
+
+
+    savePendingSetup();
 
     updateLearningDisplay();
 
@@ -1844,18 +2701,53 @@ function cancelPendingSetup(){
 
 
 /* =========================================================
-   FORMAT POINTS
+   FINISH PENDING SETUP
    ========================================================= */
 
-function formatPoints(points){
+function finishPendingSetup(
+    outcome
+){
 
-    return points.map(function(v){
+    if(!pendingSetup){
 
-        if(v===1) return "+1";
-        if(v===-1) return "-1";
-        return "0";
+        return;
 
-    }).join(" ");
+    }
+
+
+    pendingSetup.outcome=
+        outcome;
+
+
+    learningHistory.unshift(
+        pendingSetup
+    );
+
+
+    saveLearning();
+
+
+    pendingSetup=null;
+
+    entryPair=null;
+
+    entryDirection=null;
+
+
+    savePendingSetup();
+
+
+    document.getElementById(
+        "outcomeButtons"
+    ).style.display="none";
+
+
+    document.getElementById(
+        "recordButtonArea"
+    ).style.display="grid";
+
+
+    updateLearningDisplay();
 
 }
 
@@ -1873,23 +2765,43 @@ function formatDate(timestamp){
 
 
 /* =========================================================
-   GET COMPLETED HISTORY
+   FORMAT CHANGE
    ========================================================= */
 
-function getCompletedHistory(){
+function formatChange(change){
 
-    return learningHistory.filter(function(item){
-
-        return item.outcome==="WIN" ||
-               item.outcome==="LOSS";
-
-    });
+    return (
+        change.metal+
+        " P"+change.point+
+        ": "+
+        formatPointValue(change.oldValue)+
+        " → "+
+        formatPointValue(change.newValue)
+    );
 
 }
 
 
 /* =========================================================
-   CALCULATE OVERALL STATISTICS
+   COMPLETED HISTORY
+   ========================================================= */
+
+function getCompletedHistory(){
+
+    return learningHistory.filter(
+        function(item){
+
+            return item.outcome==="WIN" ||
+                   item.outcome==="LOSS";
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   OVERALL STATISTICS
    ========================================================= */
 
 function calculateOverallStats(){
@@ -1897,90 +2809,129 @@ function calculateOverallStats(){
     const completed=
         getCompletedHistory();
 
+
     const wins=
-        completed.filter(function(item){
-            return item.outcome==="WIN";
-        }).length;
+        completed.filter(
+            function(item){
+
+                return item.outcome==="WIN";
+
+            }
+        ).length;
+
 
     const losses=
-        completed.filter(function(item){
-            return item.outcome==="LOSS";
-        }).length;
+        completed.filter(
+            function(item){
+
+                return item.outcome==="LOSS";
+
+            }
+        ).length;
+
 
     const total=
-        wins+losses;
+        wins+
+        losses;
+
 
     const winRate=
         total>0
-        ? ((wins/total)*100).toFixed(1)
-        : "0.0";
+        ?((wins/total)*100)
+            .toFixed(1)
+        :"0.0";
+
 
     const netR=
-        (wins*3)-(losses*1);
+        (wins*3)-
+        (losses*1);
+
 
     return {
+
         total,
         wins,
         losses,
         winRate,
         netR
+
     };
 
 }
 
 
 /* =========================================================
-   GET EXACT SETUP STATISTICS
+   EXACT SETUP STATISTICS
    ========================================================= */
 
-function getSetupStats(fingerprint){
+function getSetupStats(
+    fingerprint
+){
 
     const trades=
         getCompletedHistory()
-        .filter(function(item){
+        .filter(
+            function(item){
 
-            return item.fingerprint===fingerprint;
+                return item.fingerprint===
+                       fingerprint;
 
-        });
+            }
+        );
+
 
     const wins=
-        trades.filter(function(item){
+        trades.filter(
+            function(item){
 
-            return item.outcome==="WIN";
+                return item.outcome==="WIN";
 
-        }).length;
+            }
+        ).length;
+
 
     const losses=
-        trades.filter(function(item){
+        trades.filter(
+            function(item){
 
-            return item.outcome==="LOSS";
+                return item.outcome==="LOSS";
 
-        }).length;
+            }
+        ).length;
+
 
     const total=
-        wins+losses;
+        wins+
+        losses;
+
 
     const winRate=
         total>0
-        ? ((wins/total)*100).toFixed(1)
-        : "0.0";
+        ?((wins/total)*100)
+            .toFixed(1)
+        :"0.0";
+
 
     const netR=
-        (wins*3)-(losses*1);
+        (wins*3)-
+        (losses*1);
+
 
     return {
+
         total,
         wins,
         losses,
         winRate,
         netR
+
     };
 
 }
 
 
 /* =========================================================
-   DISPLAY LEARNING STATUS
+   LEARNING CURRENT DISPLAY
    ========================================================= */
 
 function updateLearningDisplay(){
@@ -1990,55 +2941,177 @@ function updateLearningDisplay(){
             "learningCurrent"
         );
 
+
     const outcomeButtons=
         document.getElementById(
             "outcomeButtons"
         );
 
-    const stats=
+
+    const recordButtonArea=
         document.getElementById(
-            "learningStats"
+            "recordButtonArea"
         );
+
 
     if(pendingSetup){
 
+        let entryInfo="";
+
+
+        if(
+            pendingSetup.entryStarted
+        ){
+
+            entryInfo=`
+
+                <div class="history-entry">
+
+                    <strong>ENTRY</strong><br>
+
+                    Pair:
+                    ${pendingSetup.entryPair}
+                    <br>
+
+                    Direction:
+                    ${pendingSetup.entryDirection}
+                    <br>
+
+                    From:
+                    ${pendingSetup.entryFrom}
+                    <br>
+
+                    Price:
+                    ${pendingSetup.entryPrice}
+
+                </div>
+
+            `;
+
+        }
+
+
+        let changesHTML="";
+
+
+        if(
+            pendingSetup.pointChanges &&
+            pendingSetup.pointChanges.length>0
+        ){
+
+            changesHTML=`
+
+                <div class="changes">
+
+                    <strong>
+                        POST-ENTRY POINT CHANGES:
+                    </strong>
+
+                    ${
+                        pendingSetup.pointChanges
+                        .map(function(change){
+
+                            return `
+                                <div class="change-item">
+                                    ${formatDate(change.timestamp)}
+                                    —
+                                    ${formatChange(change)}
+                                </div>
+                            `;
+
+                        })
+                        .join("")
+                    }
+
+                </div>
+
+            `;
+
+        }else if(
+            pendingSetup.entryStarted
+        ){
+
+            changesHTML=`
+
+                <div class="changes">
+                    NO POINT CHANGES AFTER ENTRY YET.
+                </div>
+
+            `;
+
+        }
+
+
         current.innerHTML=`
-            <strong>PENDING TRADE</strong><br>
-            XAU: ${directionText(pendingSetup.xauDirection)}
-            ${pendingSetup.xauPositive >= 4
-                ? "+"+pendingSetup.xauPositive
-                : pendingSetup.xauNegative >= 4
-                ? "-"+pendingSetup.xauNegative
-                : ""}
-            &nbsp; | &nbsp;
-            XAG: ${directionText(pendingSetup.xagDirection)}
-            ${pendingSetup.xagPositive >= 4
-                ? "+"+pendingSetup.xagPositive
-                : pendingSetup.xagNegative >= 4
-                ? "-"+pendingSetup.xagNegative
-                : ""}
+
+            <strong>
+                ${
+                    pendingSetup.entryStarted
+                    ?"TRADE ACTIVE"
+                    :"SETUP READY"
+                }
+            </strong>
+
             <br>
-            XAU points: ${formatPoints(pendingSetup.xau)}
+
+            Original XAU:
+            ${formatPoints(pendingSetup.xau)}
+
             <br>
-            XAG points: ${formatPoints(pendingSetup.xag)}
-            <br>
-            <strong>Record the result after the trade.</strong>
+
+            Original XAG:
+            ${formatPoints(pendingSetup.xag)}
+
+            ${entryInfo}
+
+            ${changesHTML}
+
         `;
 
-        outcomeButtons.style.display="grid";
+
+        if(
+            pendingSetup.entryStarted
+        ){
+
+            outcomeButtons.style.display=
+                "grid";
+
+            recordButtonArea.style.display=
+                "none";
+
+        }else{
+
+            outcomeButtons.style.display=
+                "none";
+
+            recordButtonArea.style.display=
+                "grid";
+
+        }
 
     }else{
 
         current.innerHTML=
             "NO SETUP RECORDED";
 
-        outcomeButtons.style.display="none";
+        outcomeButtons.style.display=
+            "none";
+
+        recordButtonArea.style.display=
+            "grid";
 
     }
 
 
     const overall=
         calculateOverallStats();
+
+
+    const stats=
+        document.getElementById(
+            "learningStats"
+        );
+
 
     if(overall.total===0){
 
@@ -2048,6 +3121,7 @@ function updateLearningDisplay(){
     }else{
 
         stats.innerHTML=`
+
             <div class="stat-row">
                 <span>TOTAL TRADES</span>
                 <span>${overall.total}</span>
@@ -2070,8 +3144,15 @@ function updateLearningDisplay(){
 
             <div class="stat-row">
                 <span>NET R</span>
-                <span>${overall.netR >= 0 ? "+" : ""}${overall.netR}R</span>
+                <span>
+                    ${
+                        overall.netR>=0
+                        ?"+"
+                        :""
+                    }${overall.netR}R
+                </span>
             </div>
+
         `;
 
     }
@@ -2093,9 +3174,13 @@ function renderHistory(){
             "learningHistory"
         );
 
-    if(learningHistory.length===0){
+
+    if(
+        learningHistory.length===0
+    ){
 
         container.innerHTML="";
+
         return;
 
     }
@@ -2104,97 +3189,231 @@ function renderHistory(){
     container.innerHTML="";
 
 
-    learningHistory.forEach(function(item){
+    learningHistory.forEach(
+        function(item){
 
-        const setupStats=
-            getSetupStats(
-                item.fingerprint
+            const setupStats=
+                getSetupStats(
+                    item.fingerprint
+                );
+
+
+            const div=
+                document.createElement(
+                    "div"
+                );
+
+
+            if(
+                item.outcome==="WIN"
+            ){
+
+                div.className=
+                    "history-item history-win";
+
+            }else if(
+                item.outcome==="LOSS"
+            ){
+
+                div.className=
+                    "history-item history-loss";
+
+            }else{
+
+                div.className=
+                    "history-item history-pending";
+
+            }
+
+
+            const outcomeText=
+                item.outcome==="WIN"
+                ?"✓ WIN +3R"
+                :item.outcome==="LOSS"
+                ?"✕ LOSS -1R"
+                :"PENDING";
+
+
+            let changesHTML="";
+
+
+            if(
+                item.pointChanges &&
+                item.pointChanges.length>0
+            ){
+
+                changesHTML=`
+
+                    <div class="changes">
+
+                        <strong>
+                            POINT CHANGES AFTER ENTRY:
+                        </strong>
+
+                        ${
+                            item.pointChanges
+                            .map(function(change){
+
+                                return `
+                                    <div class="change-item">
+                                        ${formatDate(change.timestamp)}
+                                        —
+                                        ${formatChange(change)}
+                                    </div>
+                                `;
+
+                            })
+                            .join("")
+                        }
+
+                    </div>
+
+                `;
+
+            }else if(
+                item.entryStarted
+            ){
+
+                changesHTML=`
+
+                    <div class="changes">
+                        NO POINT CHANGES AFTER ENTRY.
+                    </div>
+
+                `;
+
+            }
+
+
+            let entryHTML="";
+
+
+            if(
+                item.entryStarted
+            ){
+
+                entryHTML=`
+
+                    <div class="history-entry">
+
+                        <strong>
+                            ENTRY INFORMATION
+                        </strong>
+
+                        <br>
+
+                        Pair:
+                        ${item.entryPair}
+
+                        <br>
+
+                        Direction:
+                        ${item.entryDirection}
+
+                        <br>
+
+                        From:
+                        ${item.entryFrom}
+
+                        <br>
+
+                        Price:
+                        ${item.entryPrice}
+
+                    </div>
+
+                `;
+
+            }
+
+
+            div.innerHTML=`
+
+                <strong>
+                    ${outcomeText}
+                </strong>
+
+                <br>
+
+                ${formatDate(item.timestamp)}
+
+                <br><br>
+
+                <strong>
+                    ORIGINAL SETUP
+                </strong>
+
+                <br>
+
+                XAU:
+                ${formatPoints(item.xau)}
+
+                <br>
+
+                XAG:
+                ${formatPoints(item.xag)}
+
+                ${entryHTML}
+
+                ${changesHTML}
+
+                <br>
+
+                Exact setup:
+                ${setupStats.total}
+                trades |
+                ${setupStats.winRate}%
+                win rate |
+                ${
+                    setupStats.netR>=0
+                    ?"+"
+                    :""
+                }${setupStats.netR}R
+
+                <div class="history-buttons">
+
+                    ${
+                        item.outcome==="PENDING"
+                        ?`
+
+                            <button
+                                class="win"
+                                onclick="finishHistoryItem('${item.id}','WIN')"
+                            >
+                                WIN +3R
+                            </button>
+
+                            <button
+                                class="loss"
+                                onclick="finishHistoryItem('${item.id}','LOSS')"
+                            >
+                                LOSS -1R
+                            </button>
+
+                        `
+                        :`
+
+                            <button
+                                class="delete-history"
+                                onclick="deleteHistoryItem('${item.id}')"
+                            >
+                                DELETE
+                            </button>
+
+                        `
+                    }
+
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                div
             );
 
-        const div=
-            document.createElement("div");
-
-        if(item.outcome==="WIN"){
-
-            div.className=
-                "history-item history-win";
-
-        }else if(item.outcome==="LOSS"){
-
-            div.className=
-                "history-item history-loss";
-
-        }else{
-
-            div.className=
-                "history-item history-pending";
-
         }
-
-
-        const outcomeText=
-            item.outcome==="WIN"
-            ? "✓ WIN +3R"
-            : item.outcome==="LOSS"
-            ? "✕ LOSS -1R"
-            : "PENDING";
-
-
-        div.innerHTML=`
-
-            <strong>${outcomeText}</strong><br>
-
-            ${formatDate(item.timestamp)}<br>
-
-            XAU:
-            ${formatPoints(item.xau)}
-            <br>
-
-            XAG:
-            ${formatPoints(item.xag)}
-            <br>
-
-            Exact setup:
-            ${setupStats.total} trades |
-            ${setupStats.winRate}% win rate |
-            ${setupStats.netR >= 0 ? "+" : ""}${setupStats.netR}R
-
-            <div class="history-buttons">
-
-                ${
-                    item.outcome==="PENDING"
-                    ? `
-                    <button
-                        class="win"
-                        onclick="finishHistoryItem('${item.id}','WIN')"
-                    >
-                        WIN +3R
-                    </button>
-
-                    <button
-                        class="loss"
-                        onclick="finishHistoryItem('${item.id}','LOSS')"
-                    >
-                        LOSS -1R
-                    </button>
-                    `
-                    : `
-                    <button
-                        class="delete-history"
-                        onclick="deleteHistoryItem('${item.id}')"
-                    >
-                        DELETE
-                    </button>
-                    `
-                }
-
-            </div>
-
-        `;
-
-        container.appendChild(div);
-
-    });
+    );
 
 }
 
@@ -2203,20 +3422,31 @@ function renderHistory(){
    FINISH HISTORY ITEM
    ========================================================= */
 
-function finishHistoryItem(id,outcome){
+function finishHistoryItem(
+    id,
+    outcome
+){
 
     const item=
-        learningHistory.find(function(x){
+        learningHistory.find(
+            function(x){
 
-            return x.id===id;
+                return x.id===id;
 
-        });
+            }
+        );
+
 
     if(!item){
+
         return;
+
     }
 
-    item.outcome=outcome;
+
+    item.outcome=
+        outcome;
+
 
     saveLearning();
 
@@ -2231,14 +3461,19 @@ function finishHistoryItem(id,outcome){
    DELETE HISTORY ITEM
    ========================================================= */
 
-function deleteHistoryItem(id){
+function deleteHistoryItem(
+    id
+){
 
     learningHistory=
-        learningHistory.filter(function(item){
+        learningHistory.filter(
+            function(item){
 
-            return item.id!==id;
+                return item.id!==id;
 
-        });
+            }
+        );
+
 
     saveLearning();
 
@@ -2253,26 +3488,41 @@ function deleteHistoryItem(id){
 
 function clearLearningHistory(){
 
-    if(learningHistory.length===0){
+    if(
+        learningHistory.length===0
+    ){
 
         return;
 
     }
+
 
     const confirmed=
         confirm(
             "Delete ALL learning/trade history?"
         );
 
+
     if(!confirmed){
+
         return;
+
     }
+
 
     learningHistory=[];
 
     pendingSetup=null;
 
+    entryPair=null;
+
+    entryDirection=null;
+
+
     saveLearning();
+
+    savePendingSetup();
+
 
     updateLearningDisplay();
 
@@ -2280,7 +3530,7 @@ function clearLearningHistory(){
 
 
 /* =========================================================
-   RESET
+   RESET CALCULATOR
    ========================================================= */
 
 function resetAll(){
@@ -2290,9 +3540,13 @@ function resetAll(){
             "Reset all XAU and XAG points?"
         );
 
+
     if(!confirmed){
+
         return;
+
     }
+
 
     xau=[
         null,
@@ -2303,6 +3557,7 @@ function resetAll(){
         null
     ];
 
+
     xag=[
         null,
         null,
@@ -2312,21 +3567,30 @@ function resetAll(){
         null
     ];
 
+
     eligibilityTimes={
+
         xauBull:null,
         xauBear:null,
         xagBull:null,
         xagBear:null
+
     };
 
 
     document
-        .querySelectorAll(".point button")
-        .forEach(function(button){
+        .querySelectorAll(
+            ".point button"
+        )
+        .forEach(
+            function(button){
 
-            clearButton(button);
+                clearButton(
+                    button
+                );
 
-        });
+            }
+        );
 
 
     saveState();
@@ -2343,59 +3607,87 @@ function resetAll(){
 function restoreButtons(){
 
     const metals=[
+
         {
             name:"xau",
             values:xau
         },
+
         {
             name:"xag",
             values:xag
         }
+
     ];
 
-    metals.forEach(function(metal){
 
-        let card=
-            document
-            .querySelector(
-                metal.name==="xau"
-                ? ".card:nth-child(1)"
-                : ".card:nth-child(2)"
+    metals.forEach(
+        function(metal){
+
+            let card=
+                document.querySelector(
+                    metal.name==="xau"
+                    ?".card:nth-child(1)"
+                    :".card:nth-child(2)"
+                );
+
+
+            let points=
+                card.querySelectorAll(
+                    ".point"
+                );
+
+
+            points.forEach(
+                function(point,index){
+
+                    let value=
+                        metal.values[index];
+
+
+                    if(value===null){
+
+                        return;
+
+                    }
+
+
+                    let buttons=
+                        point.querySelectorAll(
+                            "button"
+                        );
+
+
+                    let buttonIndex;
+
+
+                    if(value===1){
+
+                        buttonIndex=0;
+
+                    }else if(
+                        value===-1
+                    ){
+
+                        buttonIndex=1;
+
+                    }else{
+
+                        buttonIndex=2;
+
+                    }
+
+
+                    highlightButton(
+                        buttons[buttonIndex],
+                        value
+                    );
+
+                }
             );
 
-        let points=
-            card.querySelectorAll(".point");
-
-        points.forEach(function(point,index){
-
-            let value=
-                metal.values[index];
-
-            if(value===null){
-                return;
-            }
-
-            let buttons=
-                point.querySelectorAll("button");
-
-            let buttonIndex;
-
-            if(value===1){
-                buttonIndex=0;
-            }else if(value===-1){
-                buttonIndex=1;
-            }else{
-                buttonIndex=2;
-            }
-
-            highlightButton(
-                buttons[buttonIndex],
-                value
-            );
-
-        });
-
-    });
+        }
+    );
 
 }
 
@@ -2407,6 +3699,8 @@ function restoreButtons(){
 loadState();
 
 loadLearning();
+
+loadPendingSetup();
 
 restoreButtons();
 
